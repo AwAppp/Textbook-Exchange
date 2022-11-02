@@ -1,0 +1,18 @@
+[
+    {
+        "bookName":"Physics for Nerds",
+        "sellerID": "user1",
+        "price": 50,
+        "isbn": "100-200-1203",
+        "description": "a physics book for nerds, brand new, not opened.",
+        "img": "./IMG_8519.jpg"
+    },
+    {
+        "bookName":"Physics for Nerds 2",
+        "sellerID": "user1",
+        "price": 500,
+        "isbn": "101-200-1203",
+        "description": "a physics book for nerds pt 2, brand new, not opened.",
+        "img": "../assets/pictures/IMG_8519.jpg"
+    }
+]
