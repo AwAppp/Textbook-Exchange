@@ -1,18 +1,63 @@
 [
     {
         "bookName":"Physics for Nerds",
+        "bookID": 12345,
         "sellerID": "user1",
         "price": 50,
         "isbn": "100-200-1203",
         "description": "a physics book for nerds, brand new, not opened.",
-        "img": "./IMG_8519.jpg"
+        "img": "../assets/pictures/IMG_8519.jpg",
+        "tag": "Sell"
     },
     {
         "bookName":"Physics for Nerds 2",
+        "bookID": 22112,
         "sellerID": "user1",
         "price": 500,
         "isbn": "101-200-1203",
         "description": "a physics book for nerds pt 2, brand new, not opened.",
-        "img": "../assets/pictures/IMG_8519.jpg"
+        "img": "../assets/pictures/IMG_8519.jpg",
+        "tag": "Sell"
+    },
+    {
+        "bookName":"Chemistry for Nerds",
+        "bookID": 123456,
+        "sellerID": "user2",
+        "price": 20,
+        "isbn": "230-200-1203",
+        "description": "a chemistry book for nerds, brand new, not opened.",
+        "img": "../assets/pictures/IMG_8519.jpg",
+        "tag": "Sell"
+    },
+    {
+        "bookName":"Chemistry for Nerds 2",
+        "bookID": 221121,
+        "sellerID": "user2",
+        "price": 300,
+        "isbn": "900-200-1203",
+        "description": "a chemistry book for nerds pt 2, brand new, not opened.",
+        "img": "../assets/pictures/IMG_8519.jpg",
+        "tag": "Sell"
+    },
+    {
+        "bookName":"Chemistry for Nerds",
+        "bookID": 123456,
+        "sellerID": "user2",
+        "price": 20,
+        "isbn": "230-200-1203",
+        "description": "a chemistry book for nerds, brand new, not opened.",
+        "img": "../assets/pictures/IMG_8519.jpg",
+        "tag": "Sell"
+    },
+    {
+        "bookName":"Chemistry for Nerds 2",
+        "bookID": 221121,
+        "sellerID": "user2",
+        "price": 300,
+        "isbn": "900-200-1203",
+        "description": "a chemistry book for nerds pt 2, brand new, not opened.",
+        "img": "../assets/pictures/IMG_8519.jpg",
+        "tag": "Sell"
     }
+    
 ]

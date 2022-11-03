@@ -1,65 +1,98 @@
 import { Title, Card, Button, Paragraph } from 'react-native-paper';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, ScrollView, Image, Alert } from 'react-native';
+import React, { Component } from "react";
 
 const data = require('./posttest.json');
 
-class PostData {
-   constructor(bookName, sellerID, price, isbn, description, img) {
-       this.bookName = bookName;
-       this.sellerID = sellerID;
-       this.price = price;
-       this.isbn = isbn;
-       this.description = description;
-       this.img = img;
-   }
-};
-
-const postList = [];
-
-for (var i = 0; i < data.length; i++) {
-  let currData = data[i];
-  let newPost = new PostData(currData.bookName, currData.sellerID, currData.price, currData.isbn, currData.description, currData.img);
-  postList.push(newPost);
+class Post {
+    constructor(bookName, postID, sellerID, price, isbn, description, img, tag) {
+        this.postID = postID;
+        this.bookName = bookName;
+        this.sellerID = sellerID;
+        this.price = price;
+        this.isbn = isbn;
+        this.description = description;
+        this.img = img;
+        this.tag = tag;
+    }
 }
 
-const PostCard = (props) => (
-   <Card>
-      <Card.Title title={props.postData.bookName}/>
-      <Card.Content>
-         <Title>ISBN: {props.postData.isbn}</Title>
-         <Paragraph>${props.postData.price}</Paragraph>
-         <Paragraph>{props.postData.description}</Paragraph>
-      </Card.Content>
-   </Card>
-)
+class SinglePost extends Component {
+    createButtonTestAlert = () =>
+        Alert.alert(
+            "Contact " + this.props.postData.sellerID,
+            "Click here to redirect to chat",
+            [
+                { text: "OK", onPress: () => console.log("OK Pressed") }
+            ]
+        );
 
-
-
-function alertSeller(seller) {
-   alert("Tell" + {seller} + "!")
+    render() {
+        return(
+            <Card style={styles.container}>
+                <Card.Title title={this.props.postData.bookName}/>
+                <Card.Cover source={require("../assets/pictures/IMG_8519.jpg")}/>
+                <Card.Content>
+                    <Title>ISBN: {this.props.postData.isbn}</Title>
+                    <Paragraph>${this.props.postData.price}</Paragraph>
+                    <Paragraph>{this.props.postData.description}</Paragraph>
+                </Card.Content>
+                <Card.Actions>
+                    <Button mode="contained" onPress={this.createButtonTestAlert} style={styles.button}>
+                        Contact {this.props.postData.sellerID}
+                    </Button>
+                </Card.Actions>
+            </Card>
+        );
+    }
 }
 
-const PostList = () => {
-   var listItems = [];
+class PostList extends Component {
+    render() {
+        var postList = [];
 
-   for (var i = 0; i < postList.length; i++) {
-      listItems.push(<PostCard postData = {postList[i]}/>);
+        for (var i = 0; i < data.length; i++) {
+            let currData = data[i];
+            let newPost = new Post(currData.bookName, currData.postID, currData.sellerID, currData.price, currData.isbn, currData.description, currData.img, currData.tag);
+            postList.push(newPost);
+        }           
+        var listItems = [];
 
-  }
-  return listItems;
+        for (var i = 0; i < postList.length; i++) {
+            listItems.push(<SinglePost postData={postList[i]} />);
+        }
+        return listItems;
+    }
 }
 
-const PostGroup = () => {
-   return(
-   <View>
-      <PostList />
-   </View>
-   );
+class PostGroup extends Component {
+    render() {
+        return(
+            <ScrollView>
+                <PostList />
+            </ScrollView>
+        );
+    }
 }
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      marginBottom: 10,
+      marginLeft: 5,
+      marginRight: 5,
+    },
+    button: {
+        backgroundColor: "#FFD100",
+    },
+    images: {
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        resizeMode: 'contain',
+    }
+  });
+
 
 export default PostGroup;
-
-/*<Button className='remove' onClick={() => alertSeller(props.postData.sellerID)}>Contact {props.postData.sellerID}</Button>
-*/
-
-   
