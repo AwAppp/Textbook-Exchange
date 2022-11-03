@@ -1,10 +1,12 @@
 import { StyleSheet, View, Image } from 'react-native';
 import PostGroup from './components/post.js';
+import Header from './components/header.js';
 
 
 export default function App() {
   return (
     <View style={styles.container}>
+      <Header />
       <PostGroup />
     </View>
   );

@@ -26,6 +26,14 @@ class SinglePost extends Component {
                 { text: "OK", onPress: () => console.log("OK Pressed") }
             ]
         );
+    reportButtonTestAlert = () =>
+        Alert.alert(
+            "Report " + this.props.postData.sellerID,
+            "Click here to report post",
+            [
+                { text: "OK", onPress: () => console.log("OK Pressed") }
+            ]
+        );
 
     render() {
         return(
@@ -40,6 +48,9 @@ class SinglePost extends Component {
                 <Card.Actions>
                     <Button mode="contained" onPress={this.createButtonTestAlert} style={styles.button}>
                         Contact {this.props.postData.sellerID}
+                    </Button>
+                    <Button mode="contained" onPress={this.reportButtonTestAlert} style={styles.report_button}>
+                        Report Post
                     </Button>
                 </Card.Actions>
             </Card>
@@ -85,6 +96,11 @@ const styles = StyleSheet.create({
     },
     button: {
         backgroundColor: "#FFD100",
+        margin: 5,
+    },
+    report_button: {
+        backgroundColor: "#00008B",
+        margin: 5,
     },
     images: {
         flex: 1,
