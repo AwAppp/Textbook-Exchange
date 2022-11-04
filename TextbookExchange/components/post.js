@@ -39,7 +39,7 @@ class SinglePost extends Component {
         return(
             <Card style={styles.container}>
                 <Card.Title title={this.props.postData.bookName}/>
-                <Card.Cover source={require("../assets/pictures/IMG_8519.jpg")}/>
+                <Card.Cover source={require("../assets/pictures/textbook.jpeg")}/>
                 <Card.Content>
                     <Title>ISBN: {this.props.postData.isbn}</Title>
                     <Paragraph>${this.props.postData.price}</Paragraph>

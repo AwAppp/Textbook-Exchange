@@ -6,7 +6,7 @@
         "price": 50,
         "isbn": "100-200-1203",
         "description": "a physics book for nerds, brand new, not opened.",
-        "img": "../assets/pictures/IMG_8519.jpg",
+        "img": "../assets/pictures/textbook.jpeg",
         "tag": "Sell"
     },
     {
@@ -16,7 +16,7 @@
         "price": 500,
         "isbn": "101-200-1203",
         "description": "a physics book for nerds pt 2, brand new, not opened.",
-        "img": "../assets/pictures/IMG_8519.jpg",
+        "img": "../assets/pictures/textbook.jpeg",
         "tag": "Sell"
     },
     {
@@ -26,7 +26,7 @@
         "price": 20,
         "isbn": "230-200-1203",
         "description": "a chemistry book for nerds, brand new, not opened.",
-        "img": "../assets/pictures/IMG_8519.jpg",
+        "img": "../assets/pictures/textbook.jpeg",
         "tag": "Sell"
     },
     {
@@ -36,7 +36,7 @@
         "price": 300,
         "isbn": "900-200-1203",
         "description": "a chemistry book for nerds pt 2, brand new, not opened.",
-        "img": "../assets/pictures/IMG_8519.jpg",
+        "img": "../assets/pictures/textbook.jpeg",
         "tag": "Sell"
     },
     {
@@ -46,7 +46,7 @@
         "price": 20,
         "isbn": "230-200-1203",
         "description": "a chemistry book for nerds, brand new, not opened.",
-        "img": "../assets/pictures/IMG_8519.jpg",
+        "img": "../assets/pictures/textbook.jpeg",
         "tag": "Sell"
     },
     {
@@ -56,7 +56,7 @@
         "price": 300,
         "isbn": "900-200-1203",
         "description": "a chemistry book for nerds pt 2, brand new, not opened.",
-        "img": "../assets/pictures/IMG_8519.jpg",
+        "img": "../assets/pictures/textbook.jpeg",
         "tag": "Sell"
     }
     
