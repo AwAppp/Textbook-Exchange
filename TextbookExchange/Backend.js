@@ -1,3 +1,8 @@
+/*  This module implements the class Backend from the class diagram
+    It basically handle the interaction with the database
+    for example, sign up a new user, update user information etc
+*/
+
 import { initializeApp } from 'firebase/app';
 
 import {
@@ -18,6 +23,8 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+// class Backend - corresponding to the Backend class
+// in our class diagram
 class Backend {
     #userDataBase;
     #authenticationService;
@@ -27,6 +34,11 @@ class Backend {
         this.#userDataBase = getFirestore(app);
     }
 
+    // signUp - an async function to try to sign up an account using auth service
+    // parameter:   email: String
+    //              password: String
+    // return value:    uid of the user which has been signed up
+    //                  return null when fail to sign up
     async signUp(email, password) {
         try {
             let userCredential = await createUserWithEmailAndPassword(
@@ -59,6 +71,11 @@ class Backend {
         }
     }
 
+    // signIn - an async function to try to sign in an account using auth service
+    // parameters:  email: String
+    //              password: String
+    // return value:    uid of the user which has been signed in
+    //                  return null when fail to sign in
     async signIn(email, password) {
         try {
             let userCredential = await signInWithEmailAndPassword(
@@ -74,6 +91,13 @@ class Backend {
         }
     }
 
+    // getUserInfo - an async function to get user information from database
+    // it first try to call sign in function to get uid
+    // and use that uid to get user information from the database
+    // parameters:  username: String
+    //              password: String
+    // return value:    an object include the information of the user
+    //                  return null when fail to get user information
     async getUserInfo(username, password) {
         const uid = await this.signIn(username, password);
 
@@ -92,6 +116,11 @@ class Backend {
         }
     }
 
+    // addUser - an sync function to try to add information of a new user
+    // into database
+    // parameters:  user: User object (or any object with a uid field)
+    // return value:    true on success
+    //                  false on fail
     async addUser(user) {
         try {
             await setDoc(doc(this.#userDataBase,
@@ -106,6 +135,11 @@ class Backend {
         }
     }
 
+    // updateUser - an async function to try to update information of
+    // an existing user in the database
+    // parameters:  user: User object (or any object with a uid field)
+    // return value:    true on success
+    //                  false on fail 
     async updateUser(user) {
         try {
             const userRef = doc(this.#userDataBase, "users", String(user.uid));
@@ -120,6 +154,11 @@ class Backend {
         }
     }
 
+    // addPost - an async function used to try to add a new post
+    // into the database
+    // parameters:  Post object (or any object with post_id field)
+    // return value:    true on success
+    //                  false on fail
     async addPost(post) {
         try {
             await setDoc(doc(this.#userDataBase,
@@ -134,6 +173,11 @@ class Backend {
         }
     }
 
+    // updatePost - an async function used to update an existing
+    // post in the database
+    // parameters:  Post object (or any object with post_id field)
+    // return value:    true on success
+    //                  false on fail
     async updatePost(post) {
         try {
             const postRef = doc(this.#userDataBase, "posts", String(post.post_id));
@@ -149,9 +193,12 @@ class Backend {
     }
 }
 
-Backend = new Backend();
+// part beyond this point are tests that I have done for the functionality
+// of this module
 
-/* const uid = await bn.signIn('anpgtao@gmail.com', '159357tap.');
+// Backend = new Backend();
+
+/* const uid = await bn.signIn('anpgtao@gmail.com', '987654321');
 
 console.log(uid) */
 
@@ -164,4 +211,4 @@ console.log(uid) */
     sellrating: 4, "buyrating": 5
 })); */
 
-console.log(await Backend.updatePost({post_id: 1234567, title: "welcome", content: "left"}));
+// console.log(await Backend.updatePost({post_id: 1234567, title: "welcome", content: "left"}));
