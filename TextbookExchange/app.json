@@ -28,8 +28,7 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "sdkVersion": "46.0.0"
+    }
   },
   "name": "textbookexchange"
 }

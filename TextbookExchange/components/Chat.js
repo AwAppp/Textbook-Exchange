@@ -5,8 +5,12 @@ import { auth, db } from '../firebase';
 import { signOut } from 'firebase/auth';
 import { collection, addDoc, getDocs, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { GiftedChat } from 'react-native-gifted-chat';
+import { useNavigation } from '@react-navigation/native';
 
-const Chat = ({ navigation }) => {
+// input: for each chat session, get the chatting user (target)
+// the sender is the current authenticated user.
+const Chat = ({userId, name, image }) => {
+    const navigation = useNavigation();
     const [messages, setMessages] = useState([]);
     const signOutNow = () => {
         signOut(auth).then(() => {
@@ -29,12 +33,10 @@ const Chat = ({ navigation }) => {
                 </View>
             ),
             headerRight: () => (
-                <TouchableOpacity style={{
-                    marginRight: 10
-                }}
-                    onPress={signOutNow}
-                >
-                    <Text>logout</Text>
+                <TouchableOpacity 
+                    style={{marginRight: 10}}
+                    onPress={()=> {navigation.replace("Chats")}}>
+                    <Text>Back</Text>
                 </TouchableOpacity>
             )
         })
@@ -53,7 +55,7 @@ const Chat = ({ navigation }) => {
           unsubscribe();
         };
 
-    }, [navigation]);
+    });
 
     const onSend = useCallback((messages = []) => {
         const { _id, createdAt, text, user,} = messages[0]

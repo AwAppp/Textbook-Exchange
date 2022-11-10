@@ -1,0 +1,15 @@
+{
+    "users":[
+        {
+            "name" : "Plato",
+            "profileImageUrl": "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.britannica.com%2Fbiography%2FPlato&psig=AOvVaw14Zz-20hpTFRdARErVST6z&ust=1668194971751000&source=images&cd=vfe&ved=0CA8QjRxqFwoTCIiogtispPsCFQAAAAAdAAAAABAD",
+            "userId": 1
+        },
+
+        {
+            "name": "Aristotle",
+            "profileImageUrl": "https://www.google.com/url?sa=i&url=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FAristotle&psig=AOvVaw3wz5XMzWS5nLbcn5rBzyYb&ust=1668195129533000&source=images&cd=vfe&ved=0CA8QjRxqFwoTCOCygKOtpPsCFQAAAAAdAAAAABAD",
+            "userId": 2
+        }
+    ]
+}
