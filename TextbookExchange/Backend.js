@@ -231,7 +231,7 @@ class Backend {
 // part beyond this point are tests that I have done for the functionality
 // of this module
 
-Backend = new Backend();
+// Backend = new Backend();
 
 /* const uid = await bn.signIn('anpgtao@gmail.com', '987654321');
 
@@ -250,4 +250,4 @@ console.log(test); */
 
 // console.log(await Backend.updatePost({post_id: 1234567, title: "welcome", content: "left"}));
 
-console.log(await Backend.addPost({ user_id: 1234567, post_content: "hello world" }))
+// console.log(await Backend.addPost({ user_id: 1234567, post_content: "hello world" }))
