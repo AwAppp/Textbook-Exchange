@@ -4,7 +4,6 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native"; 
 
 const ChatItem = ({ name, image, userId }) => {
     const navigation = useNavigation();
-    console.log(image);
     return (
         <TouchableOpacity
         style={styles.ChatItem}

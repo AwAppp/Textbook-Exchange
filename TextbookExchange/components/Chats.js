@@ -7,29 +7,30 @@ import {
   FlatList,
   Button,
 } from "react-native";
-import { collection, addDoc, getDocs, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { auth, db } from '../firebase';
+import { collection, addDoc, getDocs, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 
 import ChatItem from './ChatItem';
 
-const customChatData = [
-    {
-        "name" : "Plato",
-        "profileImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Plato_Silanion_Musei_Capitolini_MC1377.jpg/330px-Plato_Silanion_Musei_Capitolini_MC1377.jpg",
-        "userId": 1
-    },
+// const customChatData = [
+//     {
+//         "name" : "Plato",
+//         "profileImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Plato_Silanion_Musei_Capitolini_MC1377.jpg/330px-Plato_Silanion_Musei_Capitolini_MC1377.jpg",
+//         "userId": "1"
+//     },
 
-    {
-        "name": "Aristotle",
-        "profileImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Aristotle_Altemps_Inv8575.jpg/330px-Aristotle_Altemps_Inv8575.jpg",
-        "userId": 2
-    },
+//     {
+//         "name": "Aristotle",
+//         "profileImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Aristotle_Altemps_Inv8575.jpg/330px-Aristotle_Altemps_Inv8575.jpg",
+//         "userId": "2"
+//     },
     
-    {
-        "name": "Nietzsche",
-        "profileImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Nietzsche187a.jpg/330px-Nietzsche187a.jpg",
-        "userId": 3
-    }
-];
+//     {
+//         "name": "Nietzsche",
+//         "profileImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Nietzsche187a.jpg/330px-Nietzsche187a.jpg",
+//         "userId": "3"
+//     }
+// ];
 
 
 const Chats = () => {
@@ -39,18 +40,44 @@ const Chats = () => {
     const [users, setusers] = useState([]);
     // user and its friends: a table 
     // use firestore to get all these info
-    // const userId = useSelector((state)=> state.auth.userId);
-    // const Users = useSelector((state) => state.users.users.filter((user)=> user.userId != userId));
-    // const dispatch = useDispatch();
-    
     // function to load the user's past chatted users
-    const loadUsers = (() => {
+    const curr_user = auth?.currentUser?.email;
+    const messageDB = collection(db, "messages");
+    const userDB = collection(db, "users");
+    const loadUsers = (async () => {
         setrefresh(true);
         seterror(null);
         try {
-            // TODO: firestore fetch users
-            // console.log("fetch users");
-            setusers(customChatData);
+            console.log("querying for users");
+            // find all the users that the current user chatted with before.
+            const q_msgs_rec = query(messageDB, where("receiver", "==", curr_user));
+            const q_msgs_sed = query(messageDB, where("sender", "==", curr_user));
+            const msg_rec_snapshot = await getDocs(q_msgs_rec);
+            const msg_sed_snapshot = await getDocs(q_msgs_sed);
+            var userLsts = [];
+            msg_rec_snapshot.forEach((doc) => {
+                let sender = doc.data().sender;
+                let receiver = doc.data().receiver;
+                if (sender !=  curr_user && ! userLsts.includes(sender)) { userLsts.push(sender);}
+                if (receiver !=  curr_user && ! userLsts.includes(receiver)) {userLsts.push(receiver);}
+            })
+            msg_sed_snapshot.forEach((doc) => {
+                let sender = doc.data().sender;
+                let receiver = doc.data().receiver;
+                if (sender !=  curr_user && ! userLsts.includes(sender)) { userLsts.push(sender);}
+                if (receiver !=  curr_user && ! userLsts.includes(receiver)) {userLsts.push(receiver);}
+            })
+            
+            // get the users from the user db
+            var userObjs = []
+            const userSnapshots = await getDocs(userDB);
+            userSnapshots.forEach((doc) => {
+                if (userLsts.includes(doc.data().userId)) {
+                    userObjs.push(doc.data());
+                }
+            })
+            setusers(userObjs);
+
         } catch (err) {
             console.log(err);
         }
@@ -59,9 +86,9 @@ const Chats = () => {
 
     useEffect(() => {
         setloading(false);
-        loadUsers();
+        loadUsers().catch(console.error);
         setrefresh(false);
-    });
+    }, []);
 
     if (loading) {
         console.log("loading");
