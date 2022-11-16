@@ -1,19 +1,19 @@
+import { useNavigation } from '@react-navigation/native';
 import { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, Pressable} from 'react-native';
 import Backend from "./Backend.js"
 
 const BackendInstance = new Backend();
 
-class Login extends Component {
-  render() {
+function Login (props) {
+  const navigation = useNavigation();
     return (
       <View style={styles.container}>
         <Text style={styles.description}>Log in to an existing account</Text>
-        <LoginForm/>
-        <Button onPress={() => this.props.navigation.navigate('Register')} title="Create Account"/>
+        <LoginForm setUid={props.setUid} navigation={navigation}/>
+        <Button onPress={() => navigation.navigate('Register')} title="Create Account"/>
       </View>
     )
-  } 
 }
 
 class Register extends Component {
@@ -22,6 +22,8 @@ class Register extends Component {
       <View style={styles.container}>
         <Text style={styles.description}>Register a new account</Text>
         <RegisterForm/>
+        <Text style={styles.description}>Have an account?</Text>
+        <Button onPress={() => this.props.navigation.navigate('Login')} title="Go back"/>
       </View>
     )
   }
@@ -45,9 +47,11 @@ class RegisterForm extends Component {
       let uid = await BackendInstance.signUp(this.state.email, this.state.pass);
       console.log(uid);
       if (uid) {
-        //success
         //this.props.navigation.navigate(...);
         //navigate to home page or login screen
+        this.props.navigation.navigate('Login');
+        //add username field
+        
       }
       else {
         //uid is null
@@ -84,10 +88,13 @@ class LoginForm extends Component {
 
   async attemptLogin() {
     console.log('Login button pressed');
-    let uid = await BackendInstance.signIn(this.props.email, this.props.pass);
+    let uid = await BackendInstance.signIn(this.state.email, this.state.pass);
     if (uid) {
       //success
       //this.props.navigation.navigate(...);
+      console.log(uid);
+      this.props.setUid(uid);
+      this.props.navigation.navigate('Home');
       //navigate to home page
     }
     else {
@@ -101,7 +108,7 @@ class LoginForm extends Component {
       <View>
         <LoginInput name="Email" value={this.state.email} handleText={(text) => {this.setState({email: text})}}/> 
         <LoginInput name="Password" value={this.state.pass} handleText={(text)  => {this.setState({pass: text})}} secure={true}/> 
-        <Button onPress={() => console.log('Login button pressed')} title="Login"/>
+        <Button onPress={async () => await this.attemptLogin()} title="Login"/>
       </View>
     );
   }
@@ -117,7 +124,8 @@ class LoginInput extends Component {
   }
 }
 
-//make your stylesheet actually do stuff lol
+//temporary
+//make interior of inputs different color than background
 const styles = StyleSheet.create({
   container: {
     flex: 1,
