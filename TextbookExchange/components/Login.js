@@ -16,7 +16,7 @@ const Login = ({navigation}) => {
     const signin = () => {
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          navigation.navigate('Home');
+          navigation.navigate('Chats');
         })
         .catch((error) => {
           console.log(error)

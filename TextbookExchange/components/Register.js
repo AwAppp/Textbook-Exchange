@@ -19,7 +19,7 @@ const Register = ({navigation}) => {
               const user = userCredential.user;
               updateProfile(user, {
                   displayName: name,
-                  photoURL: avatar ? avatar : 'https://gravatar.com/avatar/94d45dbdba988afacf30d916e7aaad69?s=200&d=mp&r=x',
+                  photoURL: avatar ? avatar : 'https://avatarfiles.alphacoders.com/844/84463.jpg',
               })
               .then(() => {
                   alert('Registered, please login.');
