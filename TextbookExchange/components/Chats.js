@@ -12,27 +12,6 @@ import { collection, addDoc, getDocs, query, where, orderBy, onSnapshot } from '
 
 import ChatItem from './ChatItem';
 
-// const customChatData = [
-//     {
-//         "name" : "Plato",
-//         "profileImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Plato_Silanion_Musei_Capitolini_MC1377.jpg/330px-Plato_Silanion_Musei_Capitolini_MC1377.jpg",
-//         "userId": "1"
-//     },
-
-//     {
-//         "name": "Aristotle",
-//         "profileImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Aristotle_Altemps_Inv8575.jpg/330px-Aristotle_Altemps_Inv8575.jpg",
-//         "userId": "2"
-//     },
-    
-//     {
-//         "name": "Nietzsche",
-//         "profileImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Nietzsche187a.jpg/330px-Nietzsche187a.jpg",
-//         "userId": "3"
-//     }
-// ];
-
-
 const Chats = () => {
     const [loading, setloading] = useState(false);
     const [error, seterror] = useState(false);

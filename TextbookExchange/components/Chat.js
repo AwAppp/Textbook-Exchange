@@ -31,13 +31,8 @@ const Chat = ({route, navigation}) => {
                                         where("receiver", "==", receiver));
         const msg_snapshot = await getDocs(q_msgs);
         var msg_Lsts = [];
-        msg_snapshot.sort((a,b) => {
-            var keyA = new Date(a.data().createdAt);
-            var keyB = new Date(b.data().createdAt);
-            if (keyA < keyB) return -1;
-            if (keyB > keyA) return 1;
-            return 0;
-        })
+        console.log(msg_snapshot);
+
         msg_snapshot.forEach(doc => {
             msg_Lsts.push({
                 _id: doc.data()._id,
@@ -47,7 +42,9 @@ const Chat = ({route, navigation}) => {
                 text: doc.data().text,
                 user: doc.data().user
             });
-        });
+         });
+
+         msg_Lsts.sort((a,b) => a.createdAt <= b.createdAt);
         setMessages(msg_Lsts);
     });
 
@@ -71,7 +68,7 @@ const Chat = ({route, navigation}) => {
                 </TouchableOpacity>
             )
         })
-        loadMessages.catch(console.error);
+        loadMessages().catch(console.error);
     });
 
     const onSend = useCallback((messages = []) => {

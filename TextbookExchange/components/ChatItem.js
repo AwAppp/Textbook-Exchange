@@ -2,7 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native"; // styling not right
 
-const ChatItem = ({ name, image, userId }) => {
+const ChatItem = ({ name, image, userId}) => {
     const navigation = useNavigation();
     return (
         <TouchableOpacity
@@ -24,10 +24,10 @@ const ChatItem = ({ name, image, userId }) => {
             />
             <View style={styles.detailscontainer}>
             <Text style={styles.title}>{name}</Text>
-            <Text style={styles.lastmsg}>This was the Last Message</Text>
+            {/* <Text style={styles.lastmsg}>{lastmsg}</Text> */}
             </View>
         </View>
-        <Text style={styles.msgsent}>10:50 pm</Text>
+        {/* <Text style={styles.msgsent}>{msgsent}</Text> */}
         </TouchableOpacity>
     );
 };
