@@ -1,15 +1,28 @@
 import { StyleSheet, View, Image } from 'react-native';
 import PostFeed from './pages/PostFeed.js';
 import Header from './components/header.js';
-import PostGroup from './components/post.js';
-import AddPostPage from './pages/AddPost.js';
+import {Login, Register} from './Login.js';
+import UserProfile from './pages/UserProfile.js';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <AddPostPage />
-    </View>
-  );
+    <NavigationContainer>
+      <Tab.Navigator screenOptions={{headerShown: false}}>
+        <Tab.Screen name="Post" children={() => 
+          <View>
+            <Header/>
+            <PostGroup/>
+          </View>}/>
+        <Tab.Screen name="Profile" component={UserProfile}/>
+        <Tab.Screen name="Login" component={Login}/>
+        <Tab.Screen name="Register" component={Register}/>
+      </Tab.Navigator>
+    </NavigationContainer>
+    );
 }
 
 const styles = StyleSheet.create({

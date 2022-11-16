@@ -72,7 +72,7 @@ class Backend {
         catch (error) {
             const errorCode = error.code;
             const errorMessage = error.message;
-
+            console.log(errorMessage);
             return null;
             // ..
         }
@@ -227,6 +227,8 @@ class Backend {
         }
     }
 }
+
+export default Backend;
 
 // part beyond this point are tests that I have done for the functionality
 // of this module
