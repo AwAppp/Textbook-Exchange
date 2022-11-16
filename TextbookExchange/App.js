@@ -1,5 +1,5 @@
 import { StyleSheet, View, Image } from 'react-native';
-import PostFeed from './pages/PostFeed.js';
+import PostGroup from "./components/post.js";
 import Header from './components/header.js';
 import {Login, Register} from './Login.js';
 import UserProfile from './pages/UserProfile.js';
