@@ -88,7 +88,6 @@ class PostGroup extends Component {
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
       justifyContent: 'center',
       marginBottom: 10,
       marginLeft: 5,
