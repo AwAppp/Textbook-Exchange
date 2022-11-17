@@ -5,6 +5,7 @@ import { auth, db } from '../firebase';
 import { signOut } from 'firebase/auth';
 import { collection, addDoc, doc, getDocs, query, where, orderBy, onSnapshot, setDoc } from 'firebase/firestore';
 import { GiftedChat } from 'react-native-gifted-chat';
+import Message from '../models/message';
 
 // input: for each chat session, get the chatting user (target)
 // the sender is the current authenticated user.
@@ -34,14 +35,7 @@ const Chat = ({route, navigation}) => {
         console.log(msg_snapshot);
 
         msg_snapshot.forEach(doc => {
-            msg_Lsts.push({
-                _id: doc.data()._id,
-                sender: doc.data().sender,
-                receiver: doc.data().receiver,
-                createdAt: doc.data().createdAt.toDate(),
-                text: doc.data().text,
-                user: doc.data().user
-            });
+            msg_Lsts.push(new Message(doc));
          });
 
          msg_Lsts.sort((a,b) => a.createdAt <= b.createdAt);
@@ -76,11 +70,10 @@ const Chat = ({route, navigation}) => {
         setMessages(previousMessages => 
             GiftedChat.append(previousMessages, messages)
         );
-
-        console.log(messages);
-        const { _id, createdAt, text, user} = messages[0]
+        const { id, createdAt, text, user} = messages[0]
+        console.log(messages[0]);
         const sender = auth?.currentUser?.email;
-        addDoc(collection(db, 'messages'), { _id, sender, receiver, createdAt,  text, user});
+        addDoc(collection(db, 'messages'), { id, sender, receiver, createdAt,  text, user});
     }, []);
 
     return (
