@@ -70,11 +70,7 @@ class Backend {
             return user.uid;
         }
         catch (error) {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorMessage);
-            return null;
-            // ..
+            return error;
         }
     }
 
@@ -93,8 +89,7 @@ class Backend {
             const user = userCredential.user;
             return user.uid;
         } catch (error) {
-            const errorCode = error.code;
-            const errorMessage = error.message;
+            return error;
         }
     }
 
@@ -116,10 +111,7 @@ class Backend {
 
             return docSnap.data();
         } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-
-            return null;
+            return {"error_message": "No such document"};
         }
     }
 
@@ -137,8 +129,7 @@ class Backend {
 
             return true;
         } catch (error) {
-            console.log(error);
-            return false;
+            return error;
         }
     }
 
@@ -156,8 +147,7 @@ class Backend {
             return true;
         }
         catch (error) {
-            console.log(error);
-            return false
+            return error;
         }
     }
 
@@ -180,8 +170,7 @@ class Backend {
 
             return docRef.id;
         } catch (error) {
-            console.log(error);
-            return false;
+            return error;
         }
     }
 
@@ -199,8 +188,7 @@ class Backend {
             return true;
         }
         catch (error) {
-            console.log(error);
-            return false
+            return error;
         }
     }
 
@@ -222,8 +210,7 @@ class Backend {
 
             return docRef.id;
         } catch (error) {
-            console.log(error);
-            return false;
+            return error;
         }
     }
 }
