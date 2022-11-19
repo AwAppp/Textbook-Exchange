@@ -13,7 +13,8 @@ import {
 
 import {
     getFirestore,
-    collection, setDoc, doc, getDoc, updateDoc, addDoc
+    collection, setDoc, doc, getDoc, updateDoc, addDoc,
+    getDocs
 } from "firebase/firestore";
 
 // TODO: Replace the following with your app's Firebase project configuration
@@ -70,11 +71,7 @@ class Backend {
             return user.uid;
         }
         catch (error) {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorMessage);
-            return null;
-            // ..
+            return error;
         }
     }
 
@@ -93,8 +90,7 @@ class Backend {
             const user = userCredential.user;
             return user.uid;
         } catch (error) {
-            const errorCode = error.code;
-            const errorMessage = error.message;
+            return error;
         }
     }
 
@@ -116,10 +112,7 @@ class Backend {
 
             return docSnap.data();
         } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-
-            return null;
+            return {"error_message": "No such document"};
         }
     }
 
@@ -137,8 +130,7 @@ class Backend {
 
             return true;
         } catch (error) {
-            console.log(error);
-            return false;
+            return error;
         }
     }
 
@@ -156,8 +148,7 @@ class Backend {
             return true;
         }
         catch (error) {
-            console.log(error);
-            return false
+            return error;
         }
     }
 
@@ -180,8 +171,7 @@ class Backend {
 
             return docRef.id;
         } catch (error) {
-            console.log(error);
-            return false;
+            return error;
         }
     }
 
@@ -199,8 +189,7 @@ class Backend {
             return true;
         }
         catch (error) {
-            console.log(error);
-            return false
+            return error;
         }
     }
 
@@ -222,8 +211,29 @@ class Backend {
 
             return docRef.id;
         } catch (error) {
-            console.log(error);
-            return false;
+            return error;
+        }
+    }
+
+    // listPosts - an async function used to list all the posts
+    // from the firestor
+    // Parameters: None
+    // Return value: An array of posts in the posts collection
+    //                  from firestore
+    async listPosts() {
+        try {
+            const querySnapshot = await getDocs(collection(this.#userDataBase, "posts"));
+
+            let posts_list = [];
+
+            querySnapshot.forEach((doc) => {
+                // console.log(doc.id, "=>", doc.data());
+                posts_list.push(doc.data());
+            })
+
+            return posts_list;
+        } catch (error) {
+            return error;
         }
     }
 }
