@@ -1,14 +1,18 @@
 import { View, Pressable, Alert, StyleSheet, Text} from 'react-native';
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import { FloatingAction } from "react-native-floating-action";
 import PostGroup from './../components/post.js';
+import AddPostPage from './AddPost.js';
+import Backend from "./../Backend.js";
+import { set } from 'react-native-reanimated';
+
 
 const actions = [
     {
       text: "Add New Post",
       icon: require("./../assets/pictures/plus.jpeg"),
       name: "new_post",
-      position: 1
+      position: 1,
     }];
 
 class FloatButton extends Component {
@@ -45,12 +49,19 @@ class FilterBar extends Component {
 
 
 const PostFeed = () => {
+    const [showAddPage, setShowAddPage] = useState(false);
+
     return (
         <View style={styles.container}>
             <View style={styles.space}></View>
             <FilterBar />
-            <PostGroup />
-            <FloatButton />
+            {showAddPage ? ( <AddPostPage /> ) : ( <PostFeed /> )}
+            <View style={styles.floatbutton}>
+                <FloatingAction
+                    actions={actions}
+                    onPressItem={() => setShowAddPage(!showAddPage)}
+                />
+            </View>
         </View>
     );
 }

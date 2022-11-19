@@ -1,5 +1,8 @@
 import { ScrollView, TextInput, Alert, StyleSheet, Text, View, Pressable} from 'react-native';
 import React, { Component } from "react";
+import Backend from "./../Backend.js";
+
+be = new Backend();
 
 const MultilineTextInput = (props) => {
     return (
@@ -11,8 +14,8 @@ const MultilineTextInput = (props) => {
     );
   }
 
-const AddPost = () => {
-    const [post, setPostData] = React.useState({name:"", price: 0, isbn: 0, description:""});
+const AddPost = (props) => {
+    const [post, setPostData] = React.useState({name:"", price: 0, isbn: 0, type:"", description:""});
     const [text, setText] = React.useState("");
 
     return (
@@ -38,6 +41,13 @@ const AddPost = () => {
                 placeholder="Price (USD)"
                 keyboardType="numeric"
             />
+            <TextInput clearButtonMode="always"
+                style={styles.input}
+                onChangeText={(text) => setPostData({...post, type: text })}
+                value={post.type}
+                placeholder="Buying or Selling"
+                keyboardType="text"
+            />
             <MultilineTextInput
                 clearButtonMode="always"
                 style={styles.multilineinput}
@@ -47,10 +57,14 @@ const AddPost = () => {
                 value={post.description}
                 placeholder="Description of Book (max length: 400 characters)"
             />
-            <Pressable style={styles.button} onPress={() => Alert.alert(`Title ${post.name}, Price $${post.price}, isbn ${post.isbn}, Description: ${post.description}`)}>
+            <Pressable style={styles.button} 
+                        onPress={() => {
+                                be.addPost({sellerid: props.userid, title: post.name, price: post.price, isbn: post.isbn, description: post.description, type: post.type});
+                                Alert.alert("New Post Created!");
+                        }
+            }>
                 <Text style={styles.text}>Add Post</Text>
             </Pressable>
-
         </ScrollView>
     );
 };
@@ -60,7 +74,7 @@ const AddPostPage = () => {
         <View style={styles.container}>
             <View style={styles.space}></View>
             <Text style={styles.baseText}>Add Post</Text>
-            <AddPost />
+            <AddPost userid="test"/>
         </View>
     );
 };
@@ -117,3 +131,10 @@ const styles = StyleSheet.create({
 
 
 export default AddPostPage;
+
+//Backend.AddPost({key:value})
+//prop for userID
+
+/*            <Pressable style={styles.button} onPress={Backend.addPost({sellerid: props.userid, title: post.name, price: post.price, isbn: post.isbn, description: post.description})}>
+                <Text style={styles.text}>Add Post</Text>
+            </Pressable>*/

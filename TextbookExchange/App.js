@@ -1,5 +1,7 @@
 import { StyleSheet, View, Image } from 'react-native';
 import PostGroup from "./components/post.js";
+import PostFeed from "./pages/PostFeed.js";
+import AddPostPage from './pages/AddPost.js';
 import Header from './components/header.js';
 import {Login, Register} from './Login.js';
 import UserProfile from './pages/UserProfile.js';
@@ -13,9 +15,9 @@ export default function App() {
     <NavigationContainer>
       <Tab.Navigator screenOptions={{headerShown: false}}>
         <Tab.Screen name="Post" children={() => 
-          <View>
+          <View style={styles.container}>
             <Header/>
-            <PostGroup/>
+            <PostFeed/>
           </View>}/>
         <Tab.Screen name="Profile" component={UserProfile}/>
         <Tab.Screen name="Login" component={Login}/>

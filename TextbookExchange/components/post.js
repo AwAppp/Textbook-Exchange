@@ -1,6 +1,8 @@
 import { Title, Card, Button, Paragraph } from 'react-native-paper';
 import { StyleSheet, ScrollView, Image, Alert } from 'react-native';
 import React, { Component } from "react";
+import {Backend} from "./../Backend.js";
+
 
 const data = require('./posttest.json');
 
@@ -47,7 +49,7 @@ class SinglePost extends Component {
                 </Card.Content>
                 <Card.Actions>
                     <Button mode="contained" onPress={this.createButtonTestAlert} style={styles.button}>
-                        Contact {this.props.postData.sellerID}
+                        Message {this.props.postData.sellerID}
                     </Button>
                     <Button mode="contained" onPress={this.reportButtonTestAlert} style={styles.report_button}>
                         Report Post
