@@ -13,7 +13,8 @@ import {
 
 import {
     getFirestore,
-    collection, setDoc, doc, getDoc, updateDoc, addDoc
+    collection, setDoc, doc, getDoc, updateDoc, addDoc,
+    getDocs
 } from "firebase/firestore";
 
 // TODO: Replace the following with your app's Firebase project configuration
@@ -209,6 +210,28 @@ class Backend {
             });
 
             return docRef.id;
+        } catch (error) {
+            return error;
+        }
+    }
+
+    // listPosts - an async function used to list all the posts
+    // from the firestor
+    // Parameters: None
+    // Return value: An array of posts in the posts collection
+    //                  from firestore
+    async listPosts() {
+        try {
+            const querySnapshot = await getDocs(collection(this.#userDataBase, "posts"));
+
+            let posts_list = [];
+
+            querySnapshot.forEach((doc) => {
+                // console.log(doc.id, "=>", doc.data());
+                posts_list.push(doc.data());
+            })
+
+            return posts_list;
         } catch (error) {
             return error;
         }
