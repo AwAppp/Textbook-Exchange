@@ -98,8 +98,8 @@ const Chats = () => {
     const renderItem = ({item}) => (
         <ChatItem 
             name={item.name}
-            image={item.profileImageUrl}
-            userId={item.userId} />
+            image={item.avatar}
+            userId={item.uid} />
     );
 
     return (
