@@ -1,4 +1,4 @@
-import { StyleSheet, View, Image, Button, Text} from 'react-native';
+import { StyleSheet, View} from 'react-native';
 import PostGroup from "./components/post.js";
 import Header from './components/header.js';
 import {Login, Register} from './Login.js';
@@ -47,8 +47,6 @@ export default class App extends Component {
     );
   }
 }
-
-//passing down additional props to Home component (method of updating uid)
 
 const styles = StyleSheet.create({
   container: {
