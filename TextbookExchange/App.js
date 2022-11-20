@@ -1,12 +1,15 @@
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image, Button, Text} from 'react-native';
 import PostGroup from "./components/post.js";
 import PostFeed from "./pages/PostFeed.js";
 import AddPostPage from './pages/AddPost.js';
 import Header from './components/header.js';
 import {Login, Register} from './Login.js';
 import UserProfile from './pages/UserProfile.js';
-import { NavigationContainer } from '@react-navigation/native';
+//import Chat from './components/Chat.js';
+import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+import { Component } from 'react';
 
 const Tab = createBottomTabNavigator();
 
@@ -25,7 +28,44 @@ export default function App() {
       </Tab.Navigator>
     </NavigationContainer>
     );
+const Stack = createStackNavigator();
+
+//<Tab.Screen name="Chat" component={Chat}/>
+
+function Home(props) { 
+   return (
+     <Tab.Navigator screenOptions={{headerShown: false}}>
+       <Tab.Screen name="Post" children={() => 
+         <View>
+          <Header uid={props.uid}/>
+          <PostGroup uid={props.uid}/>
+         </View>}/>
+       <Tab.Screen name="Profile" component={UserProfile}/>        
+    </Tab.Navigator>
+  );  
 }
+
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      uid: ''
+    };
+  }
+  render() {
+  return (
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
+          <Stack.Screen name="Login" children={() => <Login setUid={(uid) => {this.setState({uid: uid})}}/>} />
+          <Stack.Screen name="Register" component={Register}/>
+          <Stack.Screen name="Home" children={() => <Home uid={this.state.uid}/>} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
+}
+
+//passing down additional props to Home component (method of updating uid)
 
 const styles = StyleSheet.create({
   container: {
