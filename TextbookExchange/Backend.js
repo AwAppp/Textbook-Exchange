@@ -17,6 +17,8 @@ import {
     getDocs
 } from "firebase/firestore";
 
+import { Message_parse } from "./models/message";
+
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
     apiKey: "AIzaSyAPXF-1VTA6-O76lVI3T6Tws894coJ2xrQ",
@@ -40,6 +42,21 @@ class Backend {
     constructor() {
         this.#authenticationService = getAuth(app);
         this.#userDataBase = getFirestore(app);
+    }
+
+    // current user info:
+    // return value: email of the current user
+    getCurrentUserInfo() {
+        let email =  this.#authenticationService.currentUser.email;
+        let photoUrl = this.#authenticationService.currentUser.photoURL;
+        let avatar = photoUrl ? photoUrl : 'https://avatarfiles.alphacoders.com/844/84463.jpg';
+        let currentUserInfo = {"email": email, "avatar": avatar}
+        return currentUserInfo;
+    }
+
+    // returns collection for a specified collection name
+    getCollection(collection_name) {
+        return collection(this.#userDataBase, collection_name);
     }
 
     // signUp - an async function to try to sign up an account using auth service
@@ -214,6 +231,59 @@ class Backend {
             return error;
         }
     }
+
+
+    // query message users
+    // output: a list of users that have chatted with the current user
+    async listUserswithChats() {
+        let messageDB = collection(this.#userDataBase, "messages");
+        let userDB = collection(this.#userDataBase, "users");
+        curr_user = this.#authenticationService.currentUser.email;
+        const q_msgs_rec = query(messageDB, where("receiver", "==", curr_user));
+        const q_msgs_sed = query(messageDB, where("sender", "==", curr_user));
+        const msg_rec_snapshot = await getDocs(q_msgs_rec);
+        const msg_sed_snapshot = await getDocs(q_msgs_sed);
+        var userLsts = [];
+        msg_rec_snapshot.forEach((doc) => {
+            let sender = doc.data().sender;
+            let receiver = doc.data().receiver;
+            if (sender !=  curr_user && ! userLsts.includes(sender)) { userLsts.push(sender);}
+            if (receiver !=  curr_user && ! userLsts.includes(receiver)) {userLsts.push(receiver);}
+        })
+        msg_sed_snapshot.forEach((doc) => {
+            let sender = doc.data().sender;
+            let receiver = doc.data().receiver;
+            if (sender !=  curr_user && ! userLsts.includes(sender)) { userLsts.push(sender);}
+            if (receiver !=  curr_user && ! userLsts.includes(receiver)) {userLsts.push(receiver);}
+        })
+        // get the users from the user db
+        var userObjs = []
+        const userSnapshots = await getDocs(userDB);
+        userSnapshots.forEach((doc) => {
+            if (userLsts.includes(doc.data().userId)) {
+                userObjs.push(doc.data());
+            }
+        })
+        return userObjs;
+    }
+
+
+    // list Messages for a session: sorted by the creation time of the message
+    // returns an array of messages sorted in ascending time for time created.
+    async listMessagesByUser(sender_email, receiver) {
+        const messageDB = collection(this.#userDataBase, "messages");
+        const q_msgs = query(messageDB, where("sender", "==", sender_email),
+                                        where("receiver", "==", receiver));
+        const msg_snapshot = await getDocs(q_msgs);
+        var msg_Lsts = [];
+        msg_snapshot.forEach(doc => {
+            msg_Lsts.push(new Message_parse(doc));
+         });
+
+        msg_Lsts.sort((a,b) => a.createdAt <= b.createdAt);
+        return msg_Lsts;
+    }
+
 
     // listPosts - an async function used to list all the posts
     // from the firestor

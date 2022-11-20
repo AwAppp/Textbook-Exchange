@@ -10,24 +10,9 @@ import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Component } from 'react';
+import Chats from './components/Chats.js';
 
 const Tab = createBottomTabNavigator();
-
-export default function App() {
-  return (
-    <NavigationContainer>
-      <Tab.Navigator screenOptions={{headerShown: false}}>
-        <Tab.Screen name="Post" children={() => 
-          <View style={styles.container}>
-            <Header/>
-            <PostFeed/>
-          </View>}/>
-        <Tab.Screen name="Profile" component={UserProfile}/>
-        <Tab.Screen name="Login" component={Login}/>
-        <Tab.Screen name="Register" component={Register}/>
-      </Tab.Navigator>
-    </NavigationContainer>
-    );
 const Stack = createStackNavigator();
 
 //<Tab.Screen name="Chat" component={Chat}/>
@@ -36,11 +21,14 @@ function Home(props) {
    return (
      <Tab.Navigator screenOptions={{headerShown: false}}>
        <Tab.Screen name="Post" children={() => 
-         <View>
+         <View stype={styles.container}>
           <Header uid={props.uid}/>
-          <PostGroup uid={props.uid}/>
+          <PostFeed uid={props.uid}/>
          </View>}/>
-       <Tab.Screen name="Profile" component={UserProfile}/>        
+       <Tab.Screen name="Profile" component={UserProfile}/> 
+       <Tab.Screen name="Login" component={Login}/>
+       <Tab.Screen name="Register" component={Register}/>
+       <Tab.Screen name="Chats" component={Chats}/>       
     </Tab.Navigator>
   );  
 }
@@ -59,6 +47,7 @@ export default class App extends Component {
           <Stack.Screen name="Login" children={() => <Login setUid={(uid) => {this.setState({uid: uid})}}/>} />
           <Stack.Screen name="Register" component={Register}/>
           <Stack.Screen name="Home" children={() => <Home uid={this.state.uid}/>} />
+          <Stack.Screen name="Chats" component={Chats}/>
         </Stack.Navigator>
       </NavigationContainer>
     );
