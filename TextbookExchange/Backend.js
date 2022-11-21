@@ -42,6 +42,10 @@ class Backend {
         this.#userDataBase = getFirestore(app);
     }
 
+    getDB() {
+        return this.#userDataBase;
+    }
+
     // signUp - an async function to try to sign up an account using auth service
     // parameter:   email: String
     //              password: String
@@ -220,6 +224,24 @@ class Backend {
     // Parameters: None
     // Return value: An array of posts in the posts collection
     //                  from firestore
+    async listPoststest() {
+        try {
+            let posts_list = [];
+            collection(this.#userDataBase, "posts").get().then(function(querySnapshot) {
+                querySnapshot.forEach((doc) => {
+                    // console.log(doc.id, "=>", doc.data());
+                    posts_list.push(doc.data());
+                    //console.log(doc.data());
+                })
+            });
+            console.log('backend');
+            console.log(posts_list);
+            return posts_list;
+        } catch (error) {
+            return error;
+        }
+    }
+
     async listPosts() {
         try {
             const querySnapshot = await getDocs(collection(this.#userDataBase, "posts"));

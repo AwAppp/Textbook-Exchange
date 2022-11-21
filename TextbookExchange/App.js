@@ -17,7 +17,7 @@ export default function App() {
         <Tab.Screen name="Post" children={() => 
           <View style={styles.container}>
             <Header/>
-            <PostFeed/>
+            <PostFeed />
           </View>}/>
         <Tab.Screen name="Profile" component={UserProfile}/>
         <Tab.Screen name="Login" component={Login}/>
