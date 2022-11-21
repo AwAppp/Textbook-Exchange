@@ -16,18 +16,18 @@ function Login (props) {
     )
 }
 
-class Register extends Component {
-  render () {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.description}>Register a new account</Text>
-        <RegisterForm/>
-        <Text style={styles.description}>Have an account?</Text>
-        <Button onPress={() => this.props.navigation.navigate('Login')} title="Go back"/>
-      </View>
-    )
-  }
+function Register () {
+  const navigation = useNavigation();
+   return (
+    <View style={styles.container}>
+      <Text style={styles.description}>Register a new account</Text>
+       <RegisterForm navigation={navigation}/>
+      <Text style={styles.description}>Have an account?</Text>
+       <Button onPress={() => this.props.navigation.navigate('Login')} title="Go back"/>
+     </View>
+  )
 }
+
 
 class RegisterForm extends Component {
   constructor(props) {
