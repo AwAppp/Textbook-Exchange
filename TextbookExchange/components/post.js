@@ -109,7 +109,7 @@ class PostGroup extends Component {
     render() {
         return(
         <ScrollView>
-            {this.listItems}
+            {this.postList}
         </ScrollView>
         );
     }
