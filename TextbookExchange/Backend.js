@@ -16,6 +16,11 @@ import {
     collection, setDoc, doc, getDoc, updateDoc, addDoc
 } from "firebase/firestore";
 
+import {
+    getStorage,
+    ref, uploadBytes, uploadString, getDownloadURL, connectStorageEmulator
+} from "firebase/storage";
+
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
     apiKey: "AIzaSyAPXF-1VTA6-O76lVI3T6Tws894coJ2xrQ",
@@ -24,7 +29,8 @@ const firebaseConfig = {
     storageBucket: "bookschange-d09eb.appspot.com",
     messagingSenderId: "1065896407600",
     appId: "1:1065896407600:web:acc6efc17988f7bb8cb3f5",
-    measurementId: "G-TWVJVKK33M"
+    measurementId: "G-TWVJVKK33M",
+    storageBucket: "bookschange-d09eb.appspot.com"
 };
 
 // Initialize Firebase
@@ -35,10 +41,13 @@ const app = initializeApp(firebaseConfig);
 class Backend {
     #userDataBase;
     #authenticationService;
+    #storage;
+
 
     constructor() {
         this.#authenticationService = getAuth(app);
         this.#userDataBase = getFirestore(app);
+        this.#storage = getStorage(app);
     }
 
     // signUp - an async function to try to sign up an account using auth service
@@ -213,6 +222,19 @@ class Backend {
             return error;
         }
     }
+
+    // getUserIcon - an async function used to the URL of user icon
+    // parameters:  userID : String
+    // return value:    icon URL : String
+    async getUserIcon(userID) {
+        try {
+            const pathReference = ref(this.#storage, 'icons/' + String(userID) + '.jpg');
+
+            return {"uri": await getDownloadURL(pathReference)};
+        } catch(error) {
+            return {"error": error, "uri": null};
+        }
+    }
 }
 
 export default Backend;
@@ -240,3 +262,9 @@ console.log(test); */
 // console.log(await Backend.updatePost({post_id: 1234567, title: "welcome", content: "left"}));
 
 // console.log(await Backend.addPost({ user_id: 1234567, post_content: "hello world" }))
+
+/* console.log(await Backend.getUserIcon('test_user'));
+
+console.log(await Backend.getUserIcon('CuKe0_3VUAAVsdz'));
+
+console.log(await Backend.getUserIcon('wrong_Uesr')); */

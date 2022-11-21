@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import { useEffect, useState } from "react";
 import { EvilIcons } from "@expo/vector-icons";
 import { Rating } from "react-native-ratings";
+import Backend from "../Backend.js"
 
-const UserProfile = () => {
+const UserProfile = (props) => {
   const [profilePicture, setProfilePicture] = useState(null);
   const [name, setName] = useState("");
   const [buyerRating, setBuyerRating] = useState(0);
@@ -11,7 +12,32 @@ const UserProfile = () => {
 
   useEffect(() => {
     // fetch profile picture. if none, set to default
-    setProfilePicture(<EvilIcons name="user" size={200} style={styles.profilePicture} />);
+
+    // setProfilePicture(<EvilIcons name="user" size={200} style={styles.profilePicture} />);
+
+    const getIcon = async () => {
+      const bk = new Backend();
+
+      // TODO: replace the hard-wired user_id to props.user_id
+      const imageResult = await bk.getUserIcon('CuKe0_3VUAAVsdz');
+
+      // console.log(imageResult); // for debug
+
+      if (imageResult.uri != null) {
+        setProfilePicture(<Image
+          source={{ uri: imageResult.uri }}
+          style={{ width: 200, height: 200 }}
+        />);
+      } else {
+        setProfilePicture(<EvilIcons name="user"
+          size={200}
+          style={styles.profilePicture}
+        />);
+      }
+    };
+
+    getIcon();
+
     setName("John Doe");
   }, []);
 
@@ -31,7 +57,7 @@ const UserProfile = () => {
   );
 
   return (
-    <View>
+    <View style={{ marginTop: 50 }}>
       <View style={styles.profilePictureView}>{profilePicture}</View>
 
       <Text style={styles.name}>{name}</Text>
