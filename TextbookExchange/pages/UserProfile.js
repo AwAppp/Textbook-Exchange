@@ -15,11 +15,15 @@ const UserProfile = (props) => {
 
     // setProfilePicture(<EvilIcons name="user" size={200} style={styles.profilePicture} />);
 
-    const getIcon = async () => {
-      const bk = new Backend();
+    // TODO: use the uid from props instead of the hard-coding one
+    // const uid = props.uid;
+    const uid = "YvAxwpwDWMN4As4mrVTyufueN4I3";
 
-      // TODO: replace the hard-wired user_id to props.user_id
-      const imageResult = await bk.getUserIcon('CuKe0_3VUAAVsdz');
+    const bk = new Backend();
+
+    // define method to fetch icon from storage
+    const getIcon = async () => {
+      const imageResult = await bk.getUserIcon(uid);
 
       // console.log(imageResult); // for debug
 
@@ -36,9 +40,37 @@ const UserProfile = (props) => {
       }
     };
 
+    // define method to fetch infomation from firestore
+    const getInfo = async () => {
+      const user_info = await bk.getUserInfoByUid(uid);
+
+      // console.log(name); // for debug
+
+      if(user_info.username != null) {
+        setName(user_info.username);
+      } else {
+        setName("error when set name");
+      }
+
+      if(user_info.buyerRating != null) {
+        setBuyerRating(user_info.buyerRating);
+      } else {
+        setBuyerRating(0);
+      }
+
+      if(user_info.sellerRating != null) {
+        setSellerRating(user_info.sellerRating);
+      } else {
+        setSellerRating(0);
+      }
+    }
+
+    // call the methods to get result
     getIcon();
 
-    setName("John Doe");
+    getInfo();
+
+    // setName("John Doe");
   }, []);
 
   const RatingView = ({ ratingValue, ratingText }) => (

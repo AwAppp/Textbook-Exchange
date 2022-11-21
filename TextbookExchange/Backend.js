@@ -116,7 +116,24 @@ class Backend {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-            console.log("Document data:", docSnap.data());
+            // console.log("Document data:", docSnap.data());
+
+            return docSnap.data();
+        } else {
+            return {"error_message": "No such document"};
+        }
+    }
+
+    // getUserInfoByUid - an async function to get user information from firestor
+    // by the uid
+    // parameters:  uid  : String
+    // return value:    an object include the information from firestore
+    async getUserInfoByUid(uid) {
+        const docRef = doc(this.#userDataBase, "users", String(uid));
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            // console.log("Document data:", docSnap.data());
 
             return docSnap.data();
         } else {
