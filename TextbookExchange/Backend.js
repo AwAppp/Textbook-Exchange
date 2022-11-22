@@ -252,6 +252,25 @@ class Backend {
             return {"error": error, "uri": null};
         }
     }
+
+    // updateUserIcon - an async function used to upload use icon into storage
+    // parameter:   uid : String
+    //              icon : Blob
+    // return value:    
+    async updateUserIcon(uid, icon) {
+        const iconRef = ref(this.#storage, 'icons/' + String(uid) + '.jpg');
+
+        uploadBytes(iconRef, icon).then((snapshot) => {
+            // console.log('Uploaded a blob or file!');
+        });
+    }
+
+    // getBlobFromURI - an async function used to get Blob object by the given uri
+    // parameter:   uri : String
+    // return value:    a Blob object if the uri is valid
+    async getBlobFromURI(uri) {
+        return await (await fetch(uri)).blob();
+    }
 }
 
 export default Backend;
