@@ -17,6 +17,11 @@ import {
     getDocs
 } from "firebase/firestore";
 
+import {
+    getStorage,
+    ref, uploadBytes, uploadString, getDownloadURL, connectStorageEmulator
+} from "firebase/storage";
+
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
     apiKey: "AIzaSyAPXF-1VTA6-O76lVI3T6Tws894coJ2xrQ",
@@ -25,7 +30,8 @@ const firebaseConfig = {
     storageBucket: "bookschange-d09eb.appspot.com",
     messagingSenderId: "1065896407600",
     appId: "1:1065896407600:web:acc6efc17988f7bb8cb3f5",
-    measurementId: "G-TWVJVKK33M"
+    measurementId: "G-TWVJVKK33M",
+    storageBucket: "bookschange-d09eb.appspot.com"
 };
 
 // Initialize Firebase
@@ -36,10 +42,13 @@ const app = initializeApp(firebaseConfig);
 class Backend {
     #userDataBase;
     #authenticationService;
+    #storage;
+
 
     constructor() {
         this.#authenticationService = getAuth(app);
         this.#userDataBase = getFirestore(app);
+        this.#storage = getStorage(app);
     }
 
     getDB() {
@@ -112,7 +121,24 @@ class Backend {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-            console.log("Document data:", docSnap.data());
+            // console.log("Document data:", docSnap.data());
+
+            return docSnap.data();
+        } else {
+            return {"error_message": "No such document"};
+        }
+    }
+
+    // getUserInfoByUid - an async function to get user information from firestor
+    // by the uid
+    // parameters:  uid  : String
+    // return value:    an object include the information from firestore
+    async getUserInfoByUid(uid) {
+        const docRef = doc(this.#userDataBase, "users", String(uid));
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            // console.log("Document data:", docSnap.data());
 
             return docSnap.data();
         } else {
@@ -258,6 +284,37 @@ class Backend {
             return error;
         }
     }
+    // getUserIcon - an async function used to the URL of user icon
+    // parameters:  userID : String
+    // return value:    icon URL : String
+    async getUserIcon(userID) {
+        try {
+            const pathReference = ref(this.#storage, 'icons/' + String(userID) + '.jpg');
+
+            return {"uri": await getDownloadURL(pathReference)};
+        } catch(error) {
+            return {"error": error, "uri": null};
+        }
+    }
+
+    // updateUserIcon - an async function used to upload use icon into storage
+    // parameter:   uid : String
+    //              icon : Blob
+    // return value:    
+    async updateUserIcon(uid, icon) {
+        const iconRef = ref(this.#storage, 'icons/' + String(uid) + '.jpg');
+
+        uploadBytes(iconRef, icon).then((snapshot) => {
+            // console.log('Uploaded a blob or file!');
+        });
+    }
+
+    // getBlobFromURI - an async function used to get Blob object by the given uri
+    // parameter:   uri : String
+    // return value:    a Blob object if the uri is valid
+    async getBlobFromURI(uri) {
+        return await (await fetch(uri)).blob();
+    }
 }
 
 export default Backend;
@@ -285,3 +342,9 @@ console.log(test); */
 // console.log(await Backend.updatePost({post_id: 1234567, title: "welcome", content: "left"}));
 
 // console.log(await Backend.addPost({ user_id: 1234567, post_content: "hello world" }))
+
+/* console.log(await Backend.getUserIcon('test_user'));
+
+console.log(await Backend.getUserIcon('CuKe0_3VUAAVsdz'));
+
+console.log(await Backend.getUserIcon('wrong_Uesr')); */
