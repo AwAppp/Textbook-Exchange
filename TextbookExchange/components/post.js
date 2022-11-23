@@ -1,17 +1,10 @@
 import { Title, Card, Button, Paragraph } from 'react-native-paper';
-import { StyleSheet, ScrollView, Image, Alert } from 'react-native';
-import React, { Component, useState, useEffect } from "react";
-import Backend from "./../Backend.js";
-import {
-    getFirestore,
-    collection, setDoc, doc, getDoc, updateDoc, addDoc,
-    getDocs
-} from "firebase/firestore";
+import { StyleSheet, ScrollView, Image, Alert, BackHandler } from 'react-native';
+import React, { Component } from "react";
 
-be = new Backend();
-//const data = require('./posttest.json');
-var trueTypeOf = (obj) => Object.prototype.toString.call(obj).slice(8, -1).toLowerCase();
+import Backend from '../Backend.js';
 
+const data = require('./posttest.json');
 
 class Post {
     constructor(bookName, postID, sellerID, price, isbn, description, img, tag) {
@@ -45,10 +38,10 @@ class SinglePost extends Component {
         );
 
     render() {
-        return(
+        return (
             <Card style={styles.container}>
-                <Card.Title title={this.props.postData.bookName}/>
-                <Card.Cover source={require("../assets/pictures/textbook.jpeg")}/>
+                <Card.Title title={this.props.postData.bookName} />
+                <Card.Cover source={{uri: this.props.postData.img}} />
                 <Card.Content>
                     <Title>ISBN: {this.props.postData.isbn}</Title>
                     <Paragraph>${this.props.postData.price}</Paragraph>
@@ -56,7 +49,7 @@ class SinglePost extends Component {
                 </Card.Content>
                 <Card.Actions>
                     <Button mode="contained" onPress={this.createButtonTestAlert} style={styles.button}>
-                        Message {this.props.postData.sellerID}
+                        Contact {this.props.postData.sellerID}
                     </Button>
                     <Button mode="contained" onPress={this.reportButtonTestAlert} style={styles.report_button}>
                         Report Post
@@ -67,61 +60,66 @@ class SinglePost extends Component {
     }
 }
 
-
-
-class PostGroup extends Component {
+class PostList extends Component {
+    // The constructor of the PostList component
+    // It will initialize the state of the component
     constructor(props) {
         super(props);
-        this.state = ({postList: []});
-    }
-    
-    async getPosts() {
-        console.log("start");
-        let postList = [];
-        const datalist = await be.listPosts();
-
-        console.log(datalist);
-        for (var i = 0; i < datalist.length; i++) {
-            console.log('here');
-            let currData = datalist[i];
-            let newPost = new Post(currData.title, currData.post_id, currData.sellerid, currData.price, currData.isbn, currData.description, currData.img, currData.type);
-            postList.push(newPost);
-        }
-
-        console.log(postList);
-        return postList;  
-
+        this.state = { data: [] };
     }
 
     componentDidMount() {
-        const test = async () => {
-            const data = await this.getPosts();
-            var listItems = [];
+        const bk = new Backend();
 
-            for (var i = 0; i < data.length; i++) {
-                listItems.push(<SinglePost postData={data[i]} />);
-            }
-            this.setState({postList: listItems}); 
-            console.log('finished');
-        };
+        bk.listPosts()
+            .then(async (data) => {
+                // console.log(data);   // for debug
+                for(var i = 0; i < data.length; i++) {
+                    const postId = data[i].post_id;
+
+                    // console.log(await bk.getBookCover(postId));
+
+                    data[i]["img"] = (await bk.getBookCover(postId)).uri;
+                }
+
+                this.setState({data: data});
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }
 
     render() {
-        return(
-        <ScrollView>
-            {this.postList}
-        </ScrollView>
+        var listItems = [];
+
+        for (var i = 0; i < this.state.data.length; i++) {
+            let currData = this.state.data[i];
+            listItems.push(<SinglePost
+                postData={new Post(currData.title, currData.postID,
+                    currData.sellerID, currData.price, currData.isbn,
+                    currData.description, currData.img, currData.tag)}
+            />);
+        }
+        return listItems;
+    }
+}
+
+class PostGroup extends Component {
+    render() {
+        return (
+            <ScrollView>
+                <PostList />
+            </ScrollView>
         );
     }
 }
 
-
 const styles = StyleSheet.create({
     container: {
-      justifyContent: 'center',
-      marginBottom: 10,
-      marginLeft: 5,
-      marginRight: 5,
+        justifyContent: 'center',
+        marginBottom: 10,
+        marginLeft: 5,
+        marginRight: 5,
     },
     button: {
         backgroundColor: "#FFD100",
@@ -137,79 +135,7 @@ const styles = StyleSheet.create({
         height: '100%',
         resizeMode: 'contain',
     }
-  });
+});
 
 
 export default PostGroup;
-
-/* 
-class PostGroupold extends Component {
-    render() {
-        return(
-            <ScrollView>
-                <PostList />
-            </ScrollView>
-        );
-    }
-}
-
-function PostGroupfunc() {
-    const [data, updateData] = useState();
-    const getData = async () => {
-        const list = [];
-        const db = be.getDB();
-        console.log('start');
-        collection(db, "posts").get().then(function(querySnapshot) {
-            querySnapshot.forEach(function(doc) {
-                let currData = doc.data;
-                console.log(currData);
-                let newPost = new Post(currData.title, currData.post_id, currData.sellerid, currData.price, currData.isbn, currData.description, currData.img, currData.type);
-                list.push(newPost);
-            });
-            updateData(list);
-        });
-        console.log(list);
-    };
-    useEffect(() => {
-        getData();
-    }, []);
-    return (
-        <ScrollView>
-            {data}
-        </ScrollView>
-    );
-}
-
-const PostListeh = () => {
-    const [data, updateData] = useState();
-    useEffect(() => {
-      const getData = async () => {
-        var postList = [];
-        const datalist = await be.listPosts();
-
-        //console.log(datalist);
-
-        for (var i = 0; i < datalist.length; i++) {
-            let currData = datalist[i];
-            console.log(currData);
-            let newPost = new Post(currData.title, currData.post_id, currData.sellerid, currData.price, currData.isbn, currData.description, currData.img, currData.type);
-            postList.push(newPost);
-        } 
-        var listItems = [];
-
-        if (data != undefined){
-            for (var i = 0; i < data.length; i++) {
-                listItems.push(<SinglePost postData={data[i]} />);
-            }
-        }
-        console.log("List");
-        console.log(listItems);
-        updateData(listItems);
-      }
-      getData();
-    }, []);
-    console.log(data);
-    return data;
-  }
-
-*/

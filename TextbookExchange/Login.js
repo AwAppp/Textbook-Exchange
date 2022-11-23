@@ -1,19 +1,19 @@
 import { useNavigation } from '@react-navigation/native';
 import { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, Pressable} from 'react-native';
+import { StyleSheet, Text, View, TextInput, Pressable, Alert} from 'react-native';
 import Backend from "./Backend.js"
 
 const BackendInstance = new Backend();
 
 function Login (props) {
   const navigation = useNavigation();
-    return (
-      <View style={styles.container}>
-        <Text style={styles.description}>Log in to an existing account</Text>
-        <LoginForm setUid={props.setUid} navigation={navigation}/>
-        <Button onPress={() => navigation.navigate('Register')} title="Create Account"/>
-      </View>
-    )
+  return (
+    <View style={styles.container}>
+      <Text style={styles.description}>Log in to an existing account</Text>
+      <LoginForm setUid={props.setUid} navigation={navigation}/>
+       <Button onPress={() => navigation.navigate('Register')} title="Create Account"/>
+    </View>
+  )
 }
 
 function Register () {
@@ -26,6 +26,46 @@ function Register () {
        <Button onPress={() => this.props.navigation.navigate('Login')} title="Go back"/>
      </View>
   )
+}
+
+//Move this into a different file
+function interpretErrorMessage(res) {
+  if (res instanceof Error) {
+    console.log(res.code);    
+    let errorMessage = "";
+    switch (res.code) {
+      case "auth/email-already-in-use":
+        errorMessage = "Email already in use!";
+        break;
+      case "auth/invalid-email":
+        errorMessage = "Invalid email";
+        break;
+      case "auth/operation-not-allowed":
+        errorMessage = "Error: message should not appear"; //Should not happen
+        break;
+      case "auth/weak-password":
+        errorMessage = "Password too weak";
+        break;
+      case "auth/wrong-password":
+        errorMessage = "Wrong password";
+        break;
+      case "auth/user-not-found":
+        errorMessage = "User does not exist";
+        break;
+      case "auth/user-disabled":
+        errorMessage = "Account disabled";
+        break;
+      default:
+        errorMessage = "An error has occured";
+    }
+    return errorMessage;
+  }
+  else if (res['error_message']) {
+    return res['error_message'];
+  }
+  else {
+    return null;
+  }
 }
 
 
@@ -42,31 +82,47 @@ class RegisterForm extends Component {
 
   async attemptCreateUser() {
     console.log('Register button pressed');
-    if (this.state.pass === this.state.confirmPass) {
-      console.log('matching passwords');
-      let uid = await BackendInstance.signUp(this.state.email, this.state.pass);
-      console.log(uid);
-      if (uid) {
-        //this.props.navigation.navigate(...);
-        //navigate to home page or login screen
-        this.props.navigation.navigate('Login');
-        //add username field
-        
-      }
-      else {
-        //uid is null
-        //Display error message
-        //ASK FOR ERROR MESSAGE FROM BACKEND! IMPORTANT!
-      }
+    let uid = null;
+    let errorMessage = null;
+    if (this.state. email === '' || this.state.user === '' || this.state.pass === '') {
+      errorMessage = 'All fields must be nonempty';
+    } 
+    else if (this.state.pass !== this.state.confirmPass) {
+      errorMessage = 'Non-matching passwords';
     }
     else {
-      //display error message: Non-matching passwords
+      uid = await BackendInstance.signUp(this.state.email, this.state.pass);
+      if (uid instanceof Error) {
+        errorMessage = interpretErrorMessage(uid);
+      }
+      else {
+        //Add username field to user's info
+        let userInfo = await BackendInstance.getUserInfo(this.state.email, this.state.pass);
+        //probably best if userInfo is of type error instead
+        if (interpretErrorMessage(userInfo)) {  
+          errorMessage = interpretErrorMessage(uid); 
+        }
+        else {
+          userInfo['username'] = this.state.user;
+          uid = await BackendInstance.updateUser(userInfo);
+          if (uid instanceof Error) {
+            errorMessage = interpretErrorMessage(uid);
+          }
+          this.props.navigation.navigate('Login');
+        }
+      }
+    }
+    if (errorMessage) {
+      Alert.alert(
+        "Registration failed",
+        errorMessage,
+      ); 
     }
   }
 
   render () {
     return (
-      <View>
+      <View style={styles.align}>
         <LoginInput name="Email" value={this.state.email} handleText={(text) => {this.setState({email: text})}}/> 
         <LoginInput name="Username" value={this.state.user} handleText={(text) => {this.setState({user: text})}}/> 
         <LoginInput name="Password" value={this.state.pass} handleText={(text)  => {this.setState({pass: text})}} secure={true}/> 
@@ -88,24 +144,32 @@ class LoginForm extends Component {
 
   async attemptLogin() {
     console.log('Login button pressed');
-    let uid = await BackendInstance.signIn(this.state.email, this.state.pass);
-    if (uid) {
-      //success
-      //this.props.navigation.navigate(...);
-      console.log(uid);
-      this.props.setUid(uid);
-      this.props.navigation.navigate('Home');
-      //navigate to home page
+    let errorMessage = null;
+    if (this.state.email == '' || this.state.pass === '') {
+      errorMessage = 'All fields must be nonempty';
     }
     else {
-      //uid is null
-      //display error message
+      let uid = await BackendInstance.signIn(this.state.email, this.state.pass);
+      if (uid instanceof Error) {
+        console.log(uid.message);
+        errorMessage = interpretErrorMessage(uid);
+      }
+      else {
+        this.props.setUid(uid);
+        this.props.navigation.navigate('Home');
+      }
     }
+    if (errorMessage) {
+      Alert.alert(
+        "Login failed",
+        errorMessage,
+      ); 
+    }    
   }
 
   render () {
     return (
-      <View>
+      <View style={styles.align}>
         <LoginInput name="Email" value={this.state.email} handleText={(text) => {this.setState({email: text})}}/> 
         <LoginInput name="Password" value={this.state.pass} handleText={(text)  => {this.setState({pass: text})}} secure={true}/> 
         <Button onPress={async () => await this.attemptLogin()} title="Login"/>
@@ -117,7 +181,7 @@ class LoginForm extends Component {
 class LoginInput extends Component {
   render () {
     return (
-      <View>
+      <View style={styles.align}>
         <TextInput style={styles.input} placeholder={this.props.name} value={this.props.value} onChangeText={(text) => this.props.handleText(text)} secureTextEntry={this.props.secure}/>
       </View>
     );
@@ -133,6 +197,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  align: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   input: {
     textAlign: 'center',
     paddingVertical: 1,
@@ -143,6 +211,7 @@ const styles = StyleSheet.create({
     borderColor: '#000000',
     margin: 2,
     color: 'black',
+    width: 150,
   },
   description: {
     textAlign: 'center',
@@ -155,6 +224,7 @@ const styles = StyleSheet.create({
     margin: 2,
     borderRadius: 4,
     borderWidth: 1,
+    width: 200,
   },
   text: {
     textAlign: 'center',

@@ -3,8 +3,6 @@ import React, { Component, useState } from "react";
 import { FloatingAction } from "react-native-floating-action";
 import PostGroup from './../components/post.js';
 import AddPostPage from './AddPost.js';
-import Backend from "./../Backend.js";
-import { set } from 'react-native-reanimated';
 
 
 const actions = [
@@ -12,8 +10,16 @@ const actions = [
       text: "Add New Post",
       icon: require("./../assets/pictures/plus.jpeg"),
       name: "new_post",
-      position: 1,
-    }];
+      position: 1
+    },
+    {
+        text: "Back to Home",
+        icon: require("./../assets/pictures/plus.jpeg"),
+        name: "back_home",
+        position: 2
+      },
+
+];
 
 class FloatButton extends Component {
     render() {
@@ -48,15 +54,14 @@ class FilterBar extends Component {
 
 
 
-const PostFeed = () => {
+const PostFeed = (props) => {
     const [showAddPage, setShowAddPage] = useState(false);
-
     return (
         <View style={styles.container}>
             <View style={styles.space}></View>
             {showAddPage ? ( 
                 <View style={styles.groupcontainer}>
-                    <AddPostPage />
+                    <AddPostPage userid={props.userid}/>
                 </View> ) : ( 
                 <View style={styles.groupcontainer}>
                     <FilterBar /> 
@@ -66,10 +71,15 @@ const PostFeed = () => {
             <View style={styles.floatbutton}>
                 <FloatingAction
                     actions={actions}
-                    onPressItem={() => {setShowAddPage(!showAddPage);}}
+                    onPressItem={name => {
+                        if(name == "new_post") {
+                            setShowAddPage(true);
+                        }
+                        else { 
+                            setShowAddPage(false);
+                        }}}
                 />
             </View>
-            
         </View>
     );
 }
@@ -80,11 +90,6 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       flex:1,
     },
-    groupcontainer: {
-        backgroundColor: '#2774AE',
-        justifyContent: 'center',
-        flex:70,
-      },
     floatbutton: {
         flex: 1,
         backgroundColor: "#fff"
@@ -114,6 +119,11 @@ const styles = StyleSheet.create({
       fontSize: 16,
       marginTop: 5,
     },
+    groupcontainer: {
+        backgroundColor: '#2774AE',
+        justifyContent: 'center',
+        flex:70,
+    },
     button: {
         alignItems: 'center',
         justifyContent: 'center',
@@ -135,10 +145,14 @@ const styles = StyleSheet.create({
 
 export default PostFeed;
 
-/*{showAddPage ? ( <AddPostPage /> ) : ( <PostFeed /> )}
-            <View style={styles.floatbutton}>
-                <FloatingAction
-                    actions={actions}
-                    onPressItem={() => setShowAddPage(!showAddPage)}
-                />
-            </View> */
+/*
+{showAddPage ? ( 
+                <View style={styles.groupcontainer}>
+                    <AddPostPage />
+                </View> ) : ( 
+                <View style={styles.groupcontainer}>
+                    <FilterBar /> 
+                    <PostGroup /> 
+                </View>
+            )}
+*/
