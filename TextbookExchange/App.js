@@ -21,9 +21,9 @@ function Home(props) {
    return (
      <Tab.Navigator screenOptions={{headerShown: false}}>
        <Tab.Screen name="Post" children={() => 
-         <View>
+         <View style={styles.container}>
           <Header uid={props.uid}/>
-          <PostGroup uid={props.uid}/>
+          <PostFeed userid={props.uid}/>
          </View>}/>
        <Tab.Screen name="Profile" component={UserProfile}/>        
     </Tab.Navigator>

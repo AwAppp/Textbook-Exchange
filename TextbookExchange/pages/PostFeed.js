@@ -1,7 +1,9 @@
 import { View, Pressable, Alert, StyleSheet, Text} from 'react-native';
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import { FloatingAction } from "react-native-floating-action";
 import PostGroup from './../components/post.js';
+import AddPostPage from './AddPost.js';
+
 
 const actions = [
     {
@@ -44,13 +46,26 @@ class FilterBar extends Component {
 
 
 
-const PostFeed = () => {
+const PostFeed = (props) => {
+    const [showAddPage, setShowAddPage] = useState(false);
     return (
         <View style={styles.container}>
             <View style={styles.space}></View>
-            <FilterBar />
-            <PostGroup />
-            <FloatButton />
+            {showAddPage ? ( 
+                <View style={styles.groupcontainer}>
+                    <AddPostPage userid={props.userid}/>
+                </View> ) : ( 
+                <View style={styles.groupcontainer}>
+                    <FilterBar /> 
+                    <PostGroup /> 
+                </View>
+            )}
+            <View style={styles.floatbutton}>
+                <FloatingAction
+                    actions={actions}
+                    onPressItem={() => setShowAddPage(!showAddPage)}
+                />
+            </View>
         </View>
     );
 }
@@ -90,6 +105,11 @@ const styles = StyleSheet.create({
       fontSize: 16,
       marginTop: 5,
     },
+    groupcontainer: {
+        backgroundColor: '#2774AE',
+        justifyContent: 'center',
+        flex:70,
+    },
     button: {
         alignItems: 'center',
         justifyContent: 'center',
@@ -110,3 +130,15 @@ const styles = StyleSheet.create({
   });
 
 export default PostFeed;
+
+/*
+{showAddPage ? ( 
+                <View style={styles.groupcontainer}>
+                    <AddPostPage />
+                </View> ) : ( 
+                <View style={styles.groupcontainer}>
+                    <FilterBar /> 
+                    <PostGroup /> 
+                </View>
+            )}
+*/
