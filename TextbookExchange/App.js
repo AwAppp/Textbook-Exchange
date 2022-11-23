@@ -10,6 +10,7 @@ import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Component } from 'react';
+import Chats from './components/Chats.js';
 
 const Tab = createBottomTabNavigator();
 
@@ -25,7 +26,10 @@ function Home(props) {
           <Header uid={props.uid}/>
           <PostFeed userid={props.uid}/>
          </View>}/>
-       <Tab.Screen name="Profile" component={UserProfile}/>        
+       <Tab.Screen name="Profile" component={UserProfile}/> 
+       <Tab.Screen name="Login" component={Login}/>
+       <Tab.Screen name="Register" component={Register}/>
+       <Tab.Screen name="Chats" component={Chats}/>       
     </Tab.Navigator>
   );  
 }
@@ -44,6 +48,7 @@ export default class App extends Component {
           <Stack.Screen name="Login" children={() => <Login setUid={(uid) => {this.setState({uid: uid})}}/>} />
           <Stack.Screen name="Register" component={Register}/>
           <Stack.Screen name="Home" children={() => <Home uid={this.state.uid}/>} />
+          <Stack.Screen name="Chats" component={Chats}/>
         </Stack.Navigator>
       </NavigationContainer>
     );

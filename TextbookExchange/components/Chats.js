@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,54 +7,23 @@ import {
   FlatList,
   Button,
 } from "react-native";
-import { auth, db } from '../firebase';
-import { collection, addDoc, getDocs, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 
 import ChatItem from './ChatItem';
+import Backend from "../Backend";
+
+const backendInstance = new Backend();
 
 const Chats = () => {
     const [loading, setloading] = useState(false);
     const [error, seterror] = useState(false);
     const [refresh, setrefresh] = useState(false);
     const [users, setusers] = useState([]);
-    // user and its friends: a table 
-    // use firestore to get all these info
-    // function to load the user's past chatted users
-    const curr_user = auth?.currentUser?.email;
-    const messageDB = collection(db, "messages");
-    const userDB = collection(db, "users");
     const loadUsers = (async () => {
         setrefresh(true);
         seterror(null);
         try {
             console.log("querying for users");
-            // find all the users that the current user chatted with before.
-            const q_msgs_rec = query(messageDB, where("receiver", "==", curr_user));
-            const q_msgs_sed = query(messageDB, where("sender", "==", curr_user));
-            const msg_rec_snapshot = await getDocs(q_msgs_rec);
-            const msg_sed_snapshot = await getDocs(q_msgs_sed);
-            var userLsts = [];
-            msg_rec_snapshot.forEach((doc) => {
-                let sender = doc.data().sender;
-                let receiver = doc.data().receiver;
-                if (sender !=  curr_user && ! userLsts.includes(sender)) { userLsts.push(sender);}
-                if (receiver !=  curr_user && ! userLsts.includes(receiver)) {userLsts.push(receiver);}
-            })
-            msg_sed_snapshot.forEach((doc) => {
-                let sender = doc.data().sender;
-                let receiver = doc.data().receiver;
-                if (sender !=  curr_user && ! userLsts.includes(sender)) { userLsts.push(sender);}
-                if (receiver !=  curr_user && ! userLsts.includes(receiver)) {userLsts.push(receiver);}
-            })
-            
-            // get the users from the user db
-            var userObjs = []
-            const userSnapshots = await getDocs(userDB);
-            userSnapshots.forEach((doc) => {
-                if (userLsts.includes(doc.data().userId)) {
-                    userObjs.push(doc.data());
-                }
-            })
+            userObjs = await backendInstance.listUserswithChats();
             setusers(userObjs);
 
         } catch (err) {
@@ -98,8 +67,8 @@ const Chats = () => {
     const renderItem = ({item}) => (
         <ChatItem 
             name={item.name}
-            image={item.profileImageUrl}
-            userId={item.userId} />
+            image={item.avatar}
+            userId={item.uid} />
     );
 
     return (

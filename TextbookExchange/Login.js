@@ -68,6 +68,7 @@ function interpretErrorMessage(res) {
   }
 }
 
+
 class RegisterForm extends Component {
   constructor(props) {
     super(props);
