@@ -12,7 +12,7 @@ const ChatItem = ({ name, image, userId}) => {
             userId: userId,
             name: name,
             image: image,
-            });
+            }, navigation);
         }}
         >
         <View style={styles.container}>

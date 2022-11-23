@@ -24,6 +24,7 @@ const Chats = () => {
         try {
             console.log("querying for users");
             let userObjs = await backendInstance.listUserswithChats();
+            console.log(userObjs);
             setusers(userObjs);
 
         } catch (err) {
@@ -66,10 +67,10 @@ const Chats = () => {
 
     const renderItem = ({item}) => (
         <ChatItem 
-            name={item.name}
+            name={item.username}
             image={item.avatar}
             userId={item.uid} />
-    );
+    );``
 
     return (
         <View style={styles.chatList}>

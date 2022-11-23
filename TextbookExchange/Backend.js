@@ -273,27 +273,30 @@ class Backend {
         let userDB = collection(this.#userDataBase, "users");
         curr_user = this.#authenticationService.currentUser.email;
         const q_msgs_rec = query(messageDB, where("receiver", "==", curr_user));
-        const q_msgs_sed = query(messageDB, where("sender", "==", curr_user));
+        const q_msgs_sed = query(messageDB, where("sender_email", "==", curr_user));
         const msg_rec_snapshot = await getDocs(q_msgs_rec);
         const msg_sed_snapshot = await getDocs(q_msgs_sed);
         var userLsts = [];
         msg_rec_snapshot.forEach((doc) => {
-            let sender = doc.data().sender;
+            let sender = doc.data().sender_email;
             let receiver = doc.data().receiver;
             if (sender !=  curr_user && ! userLsts.includes(sender)) { userLsts.push(sender);}
             if (receiver !=  curr_user && ! userLsts.includes(receiver)) {userLsts.push(receiver);}
         })
         msg_sed_snapshot.forEach((doc) => {
-            let sender = doc.data().sender;
+            let sender = doc.data().sender_email;
             let receiver = doc.data().receiver;
             if (sender !=  curr_user && ! userLsts.includes(sender)) { userLsts.push(sender);}
             if (receiver !=  curr_user && ! userLsts.includes(receiver)) {userLsts.push(receiver);}
         })
         // get the users from the user db
+        console.log(userLsts);
         var userObjs = []
         const userSnapshots = await getDocs(userDB);
         userSnapshots.forEach((doc) => {
-            if (userLsts.includes(doc.data().userId)) {
+            console.log(doc.data().username);
+            if (userLsts.includes(doc.data().username)) {
+                console.log("included");
                 userObjs.push(doc.data());
             }
         })
@@ -304,8 +307,10 @@ class Backend {
     // list Messages for a session: sorted by the creation time of the message
     // returns an array of messages sorted in ascending time for time created.
     async listMessagesByUser(sender_email, receiver) {
+        console.log(sender_email);
+        console.log(receiver);
         const messageDB = collection(this.#userDataBase, "messages");
-        const q_msgs = query(messageDB, where("sender", "==", sender_email),
+        const q_msgs = query(messageDB, where("sender_email", "==", sender_email),
                                         where("receiver", "==", receiver));
         const msg_snapshot = await getDocs(q_msgs);
         var msg_Lsts = [];

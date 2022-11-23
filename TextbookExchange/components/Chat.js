@@ -10,9 +10,13 @@ const backendInstance = new Backend();
 // input: for each chat session, get the chatting user (target)
 // the sender is the current authenticated user.
 const Chat = ({route, navigation}) => {
+    // console.log("Chat")
+    // console.log(route)
     const {userId, name, image} = route.params;
     const receiver = userId;
-    const [sender_email, sender_avatar] = backendInstance.getCurrentUserInfo();
+    const currentUserInfo = backendInstance.getCurrentUserInfo();
+    const sender_email = currentUserInfo["email"];
+    const sender_avatar = currentUserInfo["avatar"];
     const receiver_name = name;
     // const navigation = useNavigation();
     const [messages, setMessages] = useState([]);
@@ -51,10 +55,10 @@ const Chat = ({route, navigation}) => {
         setMessages(previousMessages => 
             GiftedChat.append(previousMessages, messages)
         );
-        const { id, createdAt, text, user} = messages[0]
-        console.log(messages[0]);
-        const message = new Message(id, sender_email, receiver, createdAt,  text, user)
-        backendInstance.addMessage(message);
+        const { _id, createdAt, text, user} = messages[0]
+        // console.log(messages[0]);
+        const message = {_id, sender_email, receiver, createdAt,  text, user}
+        try { backendInstance.addMessage(message);} catch(error) {console.log(error);}
     }, []);
 
     return (
