@@ -57,6 +57,13 @@ const AddPost = (props) => {
                 value={post.description}
                 placeholder="Description of Book (max length: 400 characters)"
             />
+            <Pressable style={styles.imgbutton} 
+                        onPress={() => {
+                                Alert.alert("Add Image!");
+                        }
+            }>
+                <Text style={styles.text}>Add Image</Text>
+            </Pressable>
             <Pressable style={styles.button} 
                         onPress={() => {
                                 be.addPost({sellerid: props.userid, title: post.name, price: post.price, isbn: post.isbn, description: post.description, type: post.type});
@@ -119,7 +126,19 @@ const styles = StyleSheet.create({
         elevation: 3,
         backgroundColor: 'black',
         marginHorizontal: 10,
+        marginVertical:10,
       },
+    imgbutton: {
+        backgroundColor: '#2020a8',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 4,
+        elevation: 3,
+        marginHorizontal: 10,
+        marginVertical:10,
+    },
     text: {
         fontSize: 16,
         lineHeight: 21,
