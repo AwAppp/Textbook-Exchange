@@ -14,7 +14,7 @@ import {
 import {
     getFirestore,
     collection, setDoc, doc, getDoc, updateDoc, addDoc,
-    getDocs
+    getDocs, query, where
 } from "firebase/firestore";
 
 import {
@@ -22,6 +22,7 @@ import {
     ref, uploadBytes, uploadString, getDownloadURL, connectStorageEmulator
 } from "firebase/storage";
 import { Message_parse } from "./models/message";
+
 
 
 // TODO: Replace the following with your app's Firebase project configuration
@@ -69,6 +70,9 @@ class Backend {
     // returns collection for a specified collection name
     getCollection(collection_name) {
         return collection(this.#userDataBase, collection_name);
+    }
+    getDB() {
+        return this.#userDataBase;
     }
 
     // signUp - an async function to try to sign up an account using auth service

@@ -5,6 +5,7 @@ import AddPostPage from './pages/AddPost.js';
 import Header from './components/header.js';
 import {Login, Register} from './Login.js';
 import UserProfile from './pages/UserProfile.js';
+import Chats from './components/Chats.js';
 //import Chat from './components/Chat.js';
 import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -19,14 +20,15 @@ const Stack = createStackNavigator();
 
 function Home(props) { 
    return (
-     <Tab.Navigator screenOptions={{headerShown: false}}>
-       <Tab.Screen name="Post" children={() => 
-         <View style={styles.container}>
-          <Header uid={props.uid}/>
-          <PostFeed userid={props.uid}/>
-         </View>}/>
-       <Tab.Screen name="Profile" component={UserProfile}/>        
-    </Tab.Navigator>
+    <Tab.Navigator screenOptions={{headerShown: false}}>
+    <Tab.Screen name="Post" children={() => 
+      <View style={styles.container}>
+        <Header/>
+        <PostFeed />
+      </View>}/>
+    <Tab.Screen name="Profile" children={() => <UserProfile uid={props.uid} />}/>
+    <Tab.Screen name="Chat" component={Chats}/>
+  </Tab.Navigator>
   );  
 }
 

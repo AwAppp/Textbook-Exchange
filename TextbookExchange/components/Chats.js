@@ -23,7 +23,7 @@ const Chats = () => {
         seterror(null);
         try {
             console.log("querying for users");
-            userObjs = await backendInstance.listUserswithChats();
+            let userObjs = await backendInstance.listUserswithChats();
             setusers(userObjs);
 
         } catch (err) {
