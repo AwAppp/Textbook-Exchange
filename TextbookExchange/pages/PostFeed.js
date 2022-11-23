@@ -11,7 +11,15 @@ const actions = [
       icon: require("./../assets/pictures/plus.jpeg"),
       name: "new_post",
       position: 1
-    }];
+    },
+    {
+        text: "Back to Home",
+        icon: require("./../assets/pictures/plus.jpeg"),
+        name: "back_home",
+        position: 2
+      },
+
+];
 
 class FloatButton extends Component {
     render() {
@@ -63,7 +71,13 @@ const PostFeed = (props) => {
             <View style={styles.floatbutton}>
                 <FloatingAction
                     actions={actions}
-                    onPressItem={() => setShowAddPage(!showAddPage)}
+                    onPressItem={name => {
+                        if(name == "new_post") {
+                            setShowAddPage(true);
+                        }
+                        else { 
+                            setShowAddPage(false);
+                        }}}
                 />
             </View>
         </View>
