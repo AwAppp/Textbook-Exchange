@@ -3,11 +3,12 @@ import { StyleSheet, ScrollView, Image, Alert, BackHandler } from 'react-native'
 import React, { Component } from "react";
 
 import Backend from '../Backend.js';
+import { View } from 'react-native-web';
 
 const data = require('./posttest.json');
 
 class Post {
-    constructor(bookName, postID, sellerID, price, isbn, description, img, tag) {
+    constructor(bookName, postID, sellerID, price, isbn, description, img, type) {
         this.postID = postID;
         this.bookName = bookName;
         this.sellerID = sellerID;
@@ -15,7 +16,7 @@ class Post {
         this.isbn = isbn;
         this.description = description;
         this.img = img;
-        this.tag = tag;
+        this.type = type;
     }
 }
 
@@ -41,9 +42,10 @@ class SinglePost extends Component {
         return (
             <Card style={styles.container}>
                 <Card.Title title={this.props.postData.bookName} />
-                <Card.Cover source={{uri: this.props.postData.img}} />
+                <Card.Cover source={{uri: this.props.postData.img}} style={{height:500}} />
                 <Card.Content>
                     <Title>ISBN: {this.props.postData.isbn}</Title>
+                    <Title>{this.props.postData.type}</Title>
                     <Paragraph>${this.props.postData.price}</Paragraph>
                     <Paragraph>{this.props.postData.description}</Paragraph>
                 </Card.Content>
@@ -66,6 +68,8 @@ class PostList extends Component {
     constructor(props) {
         super(props);
         this.state = { data: [] };
+        this.buy = props.buy;
+        this.sell = props.sell;
     }
 
     componentDidMount() {
@@ -91,24 +95,50 @@ class PostList extends Component {
 
     render() {
         var listItems = [];
-
+        console.log("State:");
+        console.log(this.buy);
+        console.log(this.sell);
         for (var i = 0; i < this.state.data.length; i++) {
             let currData = this.state.data[i];
-            listItems.push(<SinglePost
-                postData={new Post(currData.title, currData.postID,
-                    currData.sellerID, currData.price, currData.isbn,
-                    currData.description, currData.img, currData.tag)}
-            />);
+            if(this.buy && currData.type == "Buying") {
+                listItems.push(<SinglePost
+                    postData={new Post(currData.title, currData.postID,
+                        currData.sellerID, currData.price, currData.isbn,
+                        currData.description, currData.img, currData.type)}
+                />);
+            }
+            else if(this.sell && currData.type == "Selling") {
+                listItems.push(<SinglePost
+                    postData={new Post(currData.title, currData.postID,
+                        currData.sellerID, currData.price, currData.isbn,
+                        currData.description, currData.img, currData.type)}
+                />);
+            }
+            else if(!this.sell && !this.buy) {
+                listItems.push(<SinglePost
+                    postData={new Post(currData.title, currData.postID,
+                        currData.sellerID, currData.price, currData.isbn,
+                        currData.description, currData.img, currData.type)}
+                />);
+            }
         }
         return listItems;
     }
 }
 
 class PostGroup extends Component {
+    constructor(props) {
+        super(props);
+        this.buy = props.buy;
+        this.sell = props.sell;
+    }
     render() {
+        console.log("post group");
+        console.log(this.buy);
+        console.log(this.sell);
         return (
             <ScrollView>
-                <PostList />
+                <PostList buy={this.buy} sell={this.sell}/>
             </ScrollView>
         );
     }
@@ -139,3 +169,5 @@ const styles = StyleSheet.create({
 
 
 export default PostGroup;
+
+// <Card.Cover source={{uri: this.props.postData.img}} resizeMode={`cover`}  />

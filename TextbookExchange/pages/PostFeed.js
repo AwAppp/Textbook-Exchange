@@ -17,8 +17,7 @@ const actions = [
         icon: require("./../assets/pictures/plus.jpeg"),
         name: "back_home",
         position: 2
-      },
-
+    },
 ];
 
 class FloatButton extends Component {
@@ -52,20 +51,45 @@ class FilterBar extends Component {
     }
 }
 
+const PostFilter = (props) => {
+    
+}
 
 
 const PostFeed = (props) => {
     const [showAddPage, setShowAddPage] = useState(false);
+    const [filterSell, setFilterSell] = useState(false);
+    const [filterBuy, setFilterBuy] = useState(false);
+
+
     return (
         <View style={styles.container}>
-            <View style={styles.space}></View>
             {showAddPage ? ( 
                 <View style={styles.groupcontainer}>
                     <AddPostPage userid={props.userid}/>
                 </View> ) : ( 
                 <View style={styles.groupcontainer}>
-                    <FilterBar /> 
-                    <PostGroup /> 
+                <View style={styles.fixToText}>
+                    <Pressable style={styles.button} onPress={() => {setFilterSell(true); 
+                                                                    setFilterBuy(false);
+                                                                    Alert.alert('Filter by posts selling books');
+                                                                    console.log('set to sell');}}>
+                        <Text style={styles.text}>Looking to Sell</Text>
+                    </Pressable>
+                    <Pressable style={styles.button} onPress={() => {setFilterBuy(true);
+                                                                    setFilterSell(false);
+                                                                    Alert.alert('Filter by posts looking to buy books');
+                                                                    console.log('set to buy');}}>
+                        <Text style={styles.text}>Looking to Buy</Text>
+                    </Pressable>
+                    <Pressable style={styles.button} onPress={() => {setFilterBuy(false);
+                                                                     setFilterSell(false);
+                                                                    Alert.alert('Reset View');
+                                                                    console.log('reset view');}}>
+                        <Text style={styles.text}>Reset View</Text>
+                    </Pressable>
+                </View>
+                    <PostGroup buy={filterBuy} sell={filterSell}/> 
                 </View>
             )}
             <View style={styles.floatbutton}>
@@ -127,15 +151,15 @@ const styles = StyleSheet.create({
     button: {
         alignItems: 'center',
         justifyContent: 'center',
-        paddingVertical: 12,
-        paddingHorizontal: 20,
+        paddingVertical: 5,
+        paddingHorizontal: 6,
         borderRadius: 4,
         elevation: 3,
         backgroundColor: 'black',
-        marginHorizontal: 10,
+        marginHorizontal: 6,
       },
     text: {
-        fontSize: 16,
+        fontSize: 15,
         lineHeight: 21,
         fontWeight: 'bold',
         letterSpacing: 0.25,
@@ -145,14 +169,3 @@ const styles = StyleSheet.create({
 
 export default PostFeed;
 
-/*
-{showAddPage ? ( 
-                <View style={styles.groupcontainer}>
-                    <AddPostPage />
-                </View> ) : ( 
-                <View style={styles.groupcontainer}>
-                    <FilterBar /> 
-                    <PostGroup /> 
-                </View>
-            )}
-*/
