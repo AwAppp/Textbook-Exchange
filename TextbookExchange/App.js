@@ -5,6 +5,7 @@ import AddPostPage from './pages/AddPost.js';
 import Header from './components/header.js';
 import {Login, Register} from './Login.js';
 import UserProfile from './pages/UserProfile.js';
+import Chats from './components/Chats.js';
 //import Chat from './components/Chat.js';
 import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -25,9 +26,8 @@ function Home(props) {
         <Header/>
         <PostGroup />
       </View>}/>
-    <Tab.Screen name="Profile" component={UserProfile}/>
-    <Tab.Screen name="Login" component={Login}/>
-    <Tab.Screen name="Register" component={Register}/>
+    <Tab.Screen name="Profile" children={() => <UserProfile uid={props.uid} />}/>
+    <Tab.Screen name="Chat" component={Chats}/>
   </Tab.Navigator>
   );  
 }

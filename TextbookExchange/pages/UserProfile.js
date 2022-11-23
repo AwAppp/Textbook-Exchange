@@ -12,8 +12,7 @@ const UserProfile = (props) => {
   const [sellerRating, setSellerRating] = useState(0);
   const [update, setUpdate] = useState(0);
 
-  // const uid = props.uid;
-  const uid = "EafmluzSzQcj4AB8Ptr0pL2Plkr2";
+  const uid = props.uid;
 
   useEffect(() => {
     // fetch profile picture. if none, set to default
