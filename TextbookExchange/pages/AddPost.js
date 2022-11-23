@@ -1,5 +1,6 @@
 import { ScrollView, TextInput, Alert, StyleSheet, Text, View, Pressable, Button} from 'react-native';
 import React, { Component } from "react";
+import * as ImagePicker from 'expo-image-picker';
 import Backend from "./../Backend.js";
 
 be = new Backend();
@@ -20,6 +21,7 @@ const AddPost = (props) => {
     const [post, setPostData] = React.useState({name:"", price: 0, isbn: 0, type:"", description:""});
     const [pressBuy, setPressBuy] = React.useState(false);
     const [pressSell, setPressSell] = React.useState(false);
+    const [pic, setPic] = React.useState(null);
 
     return (
         <ScrollView>
@@ -64,14 +66,21 @@ const AddPost = (props) => {
                 </Pressable>
             </View>
             <Pressable style={styles.imgbutton} 
-                        onPress={() => {
-                                Alert.alert("Add Image!");
+                        onPress={async () => {
+                                // Alert.alert("Add Image!");
+                                const uploaded_file = await ImagePicker.launchImageLibraryAsync();
+
+                                // console.log(uploaded_file); // for debug
+
+                                setPic(uploaded_file);
                         }
             }>
                 <Text style={styles.text}>Add Image</Text>
             </Pressable>
             <Pressable style={styles.button} 
-                        onPress={() => {
+                        onPress={async () => {
+                                var postId = null;
+
                                 if(pressBuy == true) {
                                     setPostData({...post, type: "Buying" });
                                 }
@@ -82,7 +91,8 @@ const AddPost = (props) => {
                                     Alert.alert("Error: Empty Fields, please fill everything out.");
                                 }
                                 else {
-                                    be.addPost({sellerid: props.userid, title: post.name, price: post.price, isbn: post.isbn, description: post.description, type: post.type});
+                                    postId = await be.addPost({sellerid: props.userid, title: post.name, price: post.price, isbn: post.isbn, description: post.description, type: post.type});
+                                    be.uploadBookPic(postId, await be.getBlobFromURI(pic.assets[0].uri));
                                     Alert.alert("New Post Created!");
                                     setPressBuy(false);
                                     setPressSell(false);

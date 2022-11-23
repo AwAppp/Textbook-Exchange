@@ -201,8 +201,8 @@ class Backend {
     // addPost - an async function used to try to add a new post
     // into the database
     // parameters:  Post object (or any object with post_id field)
-    // return value:    true on success
-    //                  false on fail
+    // return value:    post_id on success
+    //                  error object on fail
     async addPost(post) {
         try {
             const docRef = await addDoc(collection(this.#userDataBase, "posts"),
@@ -396,6 +396,16 @@ class Backend {
         } catch(error) {
             return {"error": error, "uri": null};
         }
+    }
+
+    // uploadBookPic - an async method used to upload book picture to storage
+    // parameter:   postId : String
+    //              pic : Blob
+    // return value: None
+    async uploadBookPic(postId, pic) {
+        const picRef = ref(this.#storage, 'posts/' + String(postId) + '.jpg');
+
+        uploadBytes(picRef, pic);
     }
 }
 
