@@ -28,7 +28,7 @@ function Home(props) {
         <PostGroup />
       </View>}/>
     <Tab.Screen name="Profile" children={() => <UserProfile uid={props.uid} />}/>
-    <Tab.Screen name="Chat" component={Chats}/>
+    <Tab.Screen name="Chat" children={() => <Chats/>} />
   </Tab.Navigator>
   );  
 }
@@ -43,7 +43,7 @@ export default class App extends Component {
   render() {
   return (
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{headerShown: true}}>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name="Login" children={() => <Login setUid={(uid) => {this.setState({uid: uid})}}/>} />
           <Stack.Screen name="Register" component={Register}/>
           <Stack.Screen name="Home" children={() => <Home uid={this.state.uid}/>} />

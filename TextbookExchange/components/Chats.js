@@ -66,11 +66,11 @@ const Chats = () => {
     );
 
     const renderItem = ({item}) => (
-        <ChatItem 
+        <ChatItem
             name={item.username}
             image={item.avatar}
             userId={item.uid} />
-    );``
+    );
 
     return (
         <View style={styles.chatList}>
@@ -94,6 +94,7 @@ const styles = StyleSheet.create({
       alignItems: "center",
     },
     chatList: {
+        paddingTop: 50,
         flex: 1, 
         padding: 10
     }
