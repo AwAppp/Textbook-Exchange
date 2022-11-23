@@ -54,14 +54,22 @@ const PostFeed = () => {
     return (
         <View style={styles.container}>
             <View style={styles.space}></View>
-            <FilterBar />
-            {showAddPage ? ( <AddPostPage /> ) : ( <PostFeed /> )}
+            {showAddPage ? ( 
+                <View style={styles.groupcontainer}>
+                    <AddPostPage />
+                </View> ) : ( 
+                <View style={styles.groupcontainer}>
+                    <FilterBar /> 
+                    <PostGroup /> 
+                </View>
+            )}
             <View style={styles.floatbutton}>
                 <FloatingAction
                     actions={actions}
-                    onPressItem={() => setShowAddPage(!showAddPage)}
+                    onPressItem={() => {setShowAddPage(!showAddPage);}}
                 />
             </View>
+            
         </View>
     );
 }
@@ -72,6 +80,11 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       flex:1,
     },
+    groupcontainer: {
+        backgroundColor: '#2774AE',
+        justifyContent: 'center',
+        flex:70,
+      },
     floatbutton: {
         flex: 1,
         backgroundColor: "#fff"
@@ -121,3 +134,11 @@ const styles = StyleSheet.create({
   });
 
 export default PostFeed;
+
+/*{showAddPage ? ( <AddPostPage /> ) : ( <PostFeed /> )}
+            <View style={styles.floatbutton}>
+                <FloatingAction
+                    actions={actions}
+                    onPressItem={() => setShowAddPage(!showAddPage)}
+                />
+            </View> */

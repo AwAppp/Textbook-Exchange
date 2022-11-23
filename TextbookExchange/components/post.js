@@ -1,10 +1,17 @@
 import { Title, Card, Button, Paragraph } from 'react-native-paper';
 import { StyleSheet, ScrollView, Image, Alert } from 'react-native';
-import React, { Component } from "react";
-import {Backend} from "./../Backend.js";
+import React, { Component, useState, useEffect } from "react";
+import Backend from "./../Backend.js";
+import {
+    getFirestore,
+    collection, setDoc, doc, getDoc, updateDoc, addDoc,
+    getDocs
+} from "firebase/firestore";
 
+be = new Backend();
+//const data = require('./posttest.json');
+var trueTypeOf = (obj) => Object.prototype.toString.call(obj).slice(8, -1).toLowerCase();
 
-const data = require('./posttest.json');
 
 class Post {
     constructor(bookName, postID, sellerID, price, isbn, description, img, tag) {
@@ -60,33 +67,54 @@ class SinglePost extends Component {
     }
 }
 
-class PostList extends Component {
-    render() {
-        var postList = [];
 
-        for (var i = 0; i < data.length; i++) {
-            let currData = data[i];
-            let newPost = new Post(currData.bookName, currData.postID, currData.sellerID, currData.price, currData.isbn, currData.description, currData.img, currData.tag);
-            postList.push(newPost);
-        }           
-        var listItems = [];
-
-        for (var i = 0; i < postList.length; i++) {
-            listItems.push(<SinglePost postData={postList[i]} />);
-        }
-        return listItems;
-    }
-}
 
 class PostGroup extends Component {
+    constructor(props) {
+        super(props);
+        this.state = ({postList: []});
+    }
+    
+    async getPosts() {
+        console.log("start");
+        let postList = [];
+        const datalist = await be.listPosts();
+
+        console.log(datalist);
+        for (var i = 0; i < datalist.length; i++) {
+            console.log('here');
+            let currData = datalist[i];
+            let newPost = new Post(currData.title, currData.post_id, currData.sellerid, currData.price, currData.isbn, currData.description, currData.img, currData.type);
+            postList.push(newPost);
+        }
+
+        console.log(postList);
+        return postList;  
+
+    }
+
+    componentDidMount() {
+        const test = async () => {
+            const data = await this.getPosts();
+            var listItems = [];
+
+            for (var i = 0; i < data.length; i++) {
+                listItems.push(<SinglePost postData={data[i]} />);
+            }
+            this.setState({postList: listItems}); 
+            console.log('finished');
+        };
+    }
+
     render() {
         return(
-            <ScrollView>
-                <PostList />
-            </ScrollView>
+        <ScrollView>
+            {this.postList}
+        </ScrollView>
         );
     }
 }
+
 
 const styles = StyleSheet.create({
     container: {
@@ -113,3 +141,75 @@ const styles = StyleSheet.create({
 
 
 export default PostGroup;
+
+/* 
+class PostGroupold extends Component {
+    render() {
+        return(
+            <ScrollView>
+                <PostList />
+            </ScrollView>
+        );
+    }
+}
+
+function PostGroupfunc() {
+    const [data, updateData] = useState();
+    const getData = async () => {
+        const list = [];
+        const db = be.getDB();
+        console.log('start');
+        collection(db, "posts").get().then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                let currData = doc.data;
+                console.log(currData);
+                let newPost = new Post(currData.title, currData.post_id, currData.sellerid, currData.price, currData.isbn, currData.description, currData.img, currData.type);
+                list.push(newPost);
+            });
+            updateData(list);
+        });
+        console.log(list);
+    };
+    useEffect(() => {
+        getData();
+    }, []);
+    return (
+        <ScrollView>
+            {data}
+        </ScrollView>
+    );
+}
+
+const PostListeh = () => {
+    const [data, updateData] = useState();
+    useEffect(() => {
+      const getData = async () => {
+        var postList = [];
+        const datalist = await be.listPosts();
+
+        //console.log(datalist);
+
+        for (var i = 0; i < datalist.length; i++) {
+            let currData = datalist[i];
+            console.log(currData);
+            let newPost = new Post(currData.title, currData.post_id, currData.sellerid, currData.price, currData.isbn, currData.description, currData.img, currData.type);
+            postList.push(newPost);
+        } 
+        var listItems = [];
+
+        if (data != undefined){
+            for (var i = 0; i < data.length; i++) {
+                listItems.push(<SinglePost postData={data[i]} />);
+            }
+        }
+        console.log("List");
+        console.log(listItems);
+        updateData(listItems);
+      }
+      getData();
+    }, []);
+    console.log(data);
+    return data;
+  }
+
+*/

@@ -42,14 +42,18 @@ export default class App extends Component {
   }
   render() {
   return (
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{headerShown: false}}>
-          <Stack.Screen name="Login" children={() => <Login setUid={(uid) => {this.setState({uid: uid})}}/>} />
-          <Stack.Screen name="Register" component={Register}/>
-          <Stack.Screen name="Home" children={() => <Home uid={this.state.uid}/>} />
-          <Stack.Screen name="Chats" component={Chats}/>
-        </Stack.Navigator>
-      </NavigationContainer>
+    <NavigationContainer>
+      <Tab.Navigator screenOptions={{headerShown: false}}>
+        <Tab.Screen name="Post" children={() => 
+          <View style={styles.container}>
+            <Header/>
+            <PostGroup />
+          </View>}/>
+        <Tab.Screen name="Profile" component={UserProfile}/>
+        <Tab.Screen name="Login" component={Login}/>
+        <Tab.Screen name="Register" component={Register}/>
+      </Tab.Navigator>
+    </NavigationContainer>
     );
   }
 }
