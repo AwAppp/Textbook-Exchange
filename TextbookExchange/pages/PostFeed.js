@@ -1,18 +1,14 @@
 import { View, Pressable, Alert, StyleSheet, Text} from 'react-native';
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 import { FloatingAction } from "react-native-floating-action";
 import PostGroup from './../components/post.js';
-import AddPostPage from './AddPost.js';
-import Backend from "./../Backend.js";
-import { set } from 'react-native-reanimated';
-
 
 const actions = [
     {
       text: "Add New Post",
       icon: require("./../assets/pictures/plus.jpeg"),
       name: "new_post",
-      position: 1,
+      position: 1
     }];
 
 class FloatButton extends Component {
@@ -49,27 +45,12 @@ class FilterBar extends Component {
 
 
 const PostFeed = () => {
-    const [showAddPage, setShowAddPage] = useState(false);
-
     return (
         <View style={styles.container}>
             <View style={styles.space}></View>
-            {showAddPage ? ( 
-                <View style={styles.groupcontainer}>
-                    <AddPostPage />
-                </View> ) : ( 
-                <View style={styles.groupcontainer}>
-                    <FilterBar /> 
-                    <PostGroup /> 
-                </View>
-            )}
-            <View style={styles.floatbutton}>
-                <FloatingAction
-                    actions={actions}
-                    onPressItem={() => {setShowAddPage(!showAddPage);}}
-                />
-            </View>
-            
+            <FilterBar />
+            <PostGroup />
+            <FloatButton />
         </View>
     );
 }
@@ -80,11 +61,6 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       flex:1,
     },
-    groupcontainer: {
-        backgroundColor: '#2774AE',
-        justifyContent: 'center',
-        flex:70,
-      },
     floatbutton: {
         flex: 1,
         backgroundColor: "#fff"
@@ -134,11 +110,3 @@ const styles = StyleSheet.create({
   });
 
 export default PostFeed;
-
-/*{showAddPage ? ( <AddPostPage /> ) : ( <PostFeed /> )}
-            <View style={styles.floatbutton}>
-                <FloatingAction
-                    actions={actions}
-                    onPressItem={() => setShowAddPage(!showAddPage)}
-                />
-            </View> */

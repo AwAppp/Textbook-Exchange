@@ -314,6 +314,19 @@ class Backend {
     async getBlobFromURI(uri) {
         return await (await fetch(uri)).blob();
     }
+
+    // getBookCover - an async method used to get the url of a book's image
+    // parameter:   postId : String
+    // return value:    a String of the uri
+    async getBookCover(postId) {
+        try {
+            const pathReference = ref(this.#storage, 'posts/' + String(postId) + '.jpg');
+
+            return {"uri": await getDownloadURL(pathReference)};
+        } catch(error) {
+            return {"error": error, "uri": null};
+        }
+    }
 }
 
 export default Backend;
