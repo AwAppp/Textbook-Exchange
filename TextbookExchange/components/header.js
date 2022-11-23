@@ -1,24 +1,33 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import { Appbar } from 'react-native-paper';
 import { StyleSheet} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-class Header extends Component {
-    _goBack = () => console.log('Went back');
+function Header() {
+    //const [pages] = useState(0);
+    const navigation = useNavigation();
 
-    _handleSearch = () => console.log('Searching');
+    const _goBack = () => {
+        console.log('Went back');
+        if (navigation.canGoBack()) {
+            navigation.goBack();
+        }
+    };
 
-    _handleMore = () => console.log('Shown more');
+    const _handleSearch = () => console.log('Searching');
 
-    render() {
+    const _handleMore = () => console.log('Shown more');
+
+    
         return(
             <Appbar.Header style={styles.container}>
-                <Appbar.BackAction onPress={this._goBack} />
+                <Appbar.BackAction onPress={_goBack} />
                 <Appbar.Content title="Textbook Exchange" />
-                <Appbar.Action icon="magnify" onPress={this._handleSearch} />
-                <Appbar.Action icon="dots-vertical" onPress={this._handleMore} />
+                <Appbar.Action icon="magnify" onPress={_handleSearch} />
+                <Appbar.Action icon="dots-vertical" onPress={_handleMore} />
             </Appbar.Header>
         );
-    }
+    
 }
 
 const styles = StyleSheet.create({

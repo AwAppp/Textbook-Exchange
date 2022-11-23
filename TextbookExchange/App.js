@@ -24,7 +24,7 @@ function Home(props) {
     <Tab.Screen name="Post" children={() => 
       <View style={styles.container}>
         <Header/>
-        <PostGroup />
+        <PostFeed />
       </View>}/>
     <Tab.Screen name="Profile" children={() => <UserProfile uid={props.uid} />}/>
     <Tab.Screen name="Chat" component={Chats}/>
