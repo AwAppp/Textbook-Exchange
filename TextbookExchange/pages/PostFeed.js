@@ -56,6 +56,7 @@ class FilterBar extends Component {
 
 const PostFeed = (props) => {
     const [showAddPage, setShowAddPage] = useState(false);
+    const [update, setUpdate] = useState(0);
 
     return (
         <View style={styles.container}>
@@ -64,6 +65,7 @@ const PostFeed = (props) => {
                 <View style={styles.groupcontainer}>
                     <AddPostPage
                         userid={props.userid}
+                        setShowAddPage={setShowAddPage}
                     />
                 </View>) : (
                 <View style={styles.groupcontainer}>
