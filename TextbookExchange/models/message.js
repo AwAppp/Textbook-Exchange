@@ -12,9 +12,9 @@ class Message_parse{
 }
 
 class Message {
-    constructor(id, sender_email, receiver, createdAt,  text, user) {
+    constructor(id, sender, receiver, createdAt,  text, user) {
         this._id = id;
-        this.sender = sender_email;
+        this.sender = sender;
         this.receiver = receiver;
         this.createdAt = createdAt;
         this.text = text;

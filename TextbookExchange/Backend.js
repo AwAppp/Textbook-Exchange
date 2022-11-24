@@ -59,12 +59,8 @@ class Backend {
 
     // current user info:
     // return value: email of the current user
-    getCurrentUserInfo() {
-        let email =  this.#authenticationService.currentUser.email;
-        let photoUrl = this.#authenticationService.currentUser.photoURL;
-        let avatar = photoUrl ? photoUrl : 'https://avatarfiles.alphacoders.com/844/84463.jpg';
-        let currentUserInfo = {"email": email, "avatar": avatar}
-        return currentUserInfo;
+    getCurrentUserId() {
+        return this.#authenticationService.currentUser.uid;    
     }
 
     // returns collection for a specified collection name
@@ -261,6 +257,7 @@ class Backend {
 
             return docRef.id;
         } catch (error) {
+            console.log(error);
             return error;
         }
     }
@@ -271,32 +268,29 @@ class Backend {
     async listUserswithChats() {
         let messageDB = collection(this.#userDataBase, "messages");
         let userDB = collection(this.#userDataBase, "users");
-        curr_user = this.#authenticationService.currentUser.email;
+        curr_user = this.#authenticationService.currentUser.uid;
         const q_msgs_rec = query(messageDB, where("receiver", "==", curr_user));
-        const q_msgs_sed = query(messageDB, where("sender_email", "==", curr_user));
+        const q_msgs_sed = query(messageDB, where("sender", "==", curr_user));
         const msg_rec_snapshot = await getDocs(q_msgs_rec);
         const msg_sed_snapshot = await getDocs(q_msgs_sed);
         var userLsts = [];
         msg_rec_snapshot.forEach((doc) => {
-            let sender = doc.data().sender_email;
+            let sender = doc.data().sender;
             let receiver = doc.data().receiver;
             if (sender !=  curr_user && ! userLsts.includes(sender)) { userLsts.push(sender);}
             if (receiver !=  curr_user && ! userLsts.includes(receiver)) {userLsts.push(receiver);}
         })
         msg_sed_snapshot.forEach((doc) => {
-            let sender = doc.data().sender_email;
+            let sender = doc.data().sender;
             let receiver = doc.data().receiver;
             if (sender !=  curr_user && ! userLsts.includes(sender)) { userLsts.push(sender);}
             if (receiver !=  curr_user && ! userLsts.includes(receiver)) {userLsts.push(receiver);}
         })
         // get the users from the user db
-        console.log(userLsts);
         var userObjs = []
         const userSnapshots = await getDocs(userDB);
         userSnapshots.forEach((doc) => {
-            console.log(doc.data().username);
-            if (userLsts.includes(doc.data().username)) {
-                console.log("included");
+            if (userLsts.includes(doc.data().uid)) {
                 userObjs.push(doc.data());
             }
         })
@@ -304,13 +298,24 @@ class Backend {
     }
 
 
+    async getLatestMessage(uid) {
+        const curr_user = this.#authenticationService.currentUser.uid;
+        const msg_Lsts_sender = await this.listMessagesByUser(curr_user, uid);
+        if (msg_Lsts_sender.length == 0) {
+            const msg_Lsts_rec = await this.listMessagesByUser(uid, curr_user);
+            return msg_Lsts_rec[msg_Lsts_rec.length - 1];
+        } else {
+            console.log(msg_Lsts_sender);
+            return msg_Lsts_sender[msg_Lsts_sender.length - 1];
+        }
+    }
+
+
     // list Messages for a session: sorted by the creation time of the message
     // returns an array of messages sorted in ascending time for time created.
-    async listMessagesByUser(sender_email, receiver) {
-        console.log(sender_email);
-        console.log(receiver);
+    async listMessagesByUser(sender, receiver) {
         const messageDB = collection(this.#userDataBase, "messages");
-        const q_msgs = query(messageDB, where("sender_email", "==", sender_email),
+        const q_msgs = query(messageDB, where("sender", "==", sender),
                                         where("receiver", "==", receiver));
         const msg_snapshot = await getDocs(q_msgs);
         var msg_Lsts = [];
@@ -371,6 +376,7 @@ class Backend {
 
             return {"uri": await getDownloadURL(pathReference)};
         } catch(error) {
+            console.log(error);
             return {"error": error, "uri": null};
         }
     }
