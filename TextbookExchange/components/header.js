@@ -9,9 +9,8 @@ function Header() {
 
     const _goBack = () => {
         console.log('Went back');
-        if (navigation.canGoBack()) {
-            navigation.goBack();
-        }
+        navigation.goBack()
+        navigation.navigate('Home');
     };
 
     const _handleSearch = () => console.log('Searching');

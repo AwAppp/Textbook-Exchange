@@ -5,7 +5,6 @@ import Backend from "./../Backend.js";
 
 be = new Backend();
 
-
 const MultilineTextInput = (props) => {
     return (
       <TextInput
@@ -91,8 +90,9 @@ const AddPost = (props) => {
                                     Alert.alert("Error: Empty Fields, please fill everything out.");
                                 }
                                 else {
-                                    postId = await be.addPost({sellerid: props.userid, title: post.name, price: post.price, isbn: post.isbn, description: post.description, type: post.type});
-                                    be.uploadBookPic(postId, await be.getBlobFromURI(pic.assets[0].uri));
+                                    let userInfo = await be.getUserInfoByUid(props.userid);
+                                    postId = await be.addPost({sellerid: props.userid, title: post.name, price: post.price, isbn: post.isbn, description: post.description, type: post.type, username: userInfo.username});
+                                    await be.uploadBookPic(postId, await be.getBlobFromURI(pic.assets[0].uri));
                                     Alert.alert("New Post Created!");
                                     setPressBuy(false);
                                     setPressSell(false);
@@ -109,7 +109,7 @@ const AddPostPage = (props) => {
     return (
         <View style={styles.container}>
             <Text style={styles.baseText}>Add Post</Text>
-            <AddPost userid={props.userid}/>
+            <AddPost userid={props.userid} />
         </View>
     );
 };

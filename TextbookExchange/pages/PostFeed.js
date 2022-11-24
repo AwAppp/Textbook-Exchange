@@ -1,5 +1,5 @@
-import { View, Pressable, Alert, StyleSheet, Text} from 'react-native';
-import React, { Component, useState } from "react";
+import { View, Pressable, Alert, StyleSheet, Text } from 'react-native';
+import React, { Component, useEffect, useState } from "react";
 import { FloatingAction } from "react-native-floating-action";
 import PostGroup from './../components/post.js';
 import AddPostPage from './AddPost.js';
@@ -7,17 +7,17 @@ import AddPostPage from './AddPost.js';
 
 const actions = [
     {
-      text: "Add New Post",
-      icon: require("./../assets/pictures/plus.jpeg"),
-      name: "new_post",
-      position: 1
+        text: "Add New Post",
+        icon: require("./../assets/pictures/plus.jpeg"),
+        name: "new_post",
+        position: 1
     },
     {
         text: "Back to Home",
         icon: require("./../assets/pictures/plus.jpeg"),
         name: "back_home",
         position: 2
-      },
+    },
 
 ];
 
@@ -28,7 +28,7 @@ class FloatButton extends Component {
                 <FloatingAction
                     actions={actions}
                     onPressItem={name => {
-                    console.log(`selected button: ${name}`);
+                        console.log(`selected button: ${name}`);
                     }}
                 />
             </View>
@@ -56,28 +56,32 @@ class FilterBar extends Component {
 
 const PostFeed = (props) => {
     const [showAddPage, setShowAddPage] = useState(false);
+
     return (
         <View style={styles.container}>
             <View style={styles.space}></View>
-            {showAddPage ? ( 
+            {showAddPage ? (
                 <View style={styles.groupcontainer}>
-                    <AddPostPage userid={props.userid}/>
-                </View> ) : ( 
+                    <AddPostPage
+                        userid={props.userid}
+                    />
+                </View>) : (
                 <View style={styles.groupcontainer}>
-                    <FilterBar /> 
-                    <PostGroup /> 
+                    <FilterBar />
+                    <PostGroup />
                 </View>
             )}
             <View style={styles.floatbutton}>
                 <FloatingAction
                     actions={actions}
                     onPressItem={name => {
-                        if(name == "new_post") {
+                        if (name == "new_post") {
                             setShowAddPage(true);
                         }
-                        else { 
+                        else {
                             setShowAddPage(false);
-                        }}}
+                        }
+                    }}
                 />
             </View>
         </View>
@@ -86,9 +90,9 @@ const PostFeed = (props) => {
 
 const styles = StyleSheet.create({
     container: {
-      backgroundColor: '#2774AE',
-      justifyContent: 'center',
-      flex:1,
+        backgroundColor: '#2774AE',
+        justifyContent: 'center',
+        flex: 1,
     },
     floatbutton: {
         flex: 1,
@@ -98,31 +102,31 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginVertical: 20,
-      },
+    },
     space: {
         paddingVertical: 12,
-        marginVertical:10,
+        marginVertical: 10,
     },
     fonts: {
-      marginBottom: 8,
+        marginBottom: 8,
     },
     user: {
-      flexDirection: 'row',
-      marginBottom: 6,
+        flexDirection: 'row',
+        marginBottom: 6,
     },
     image: {
-      width: 30,
-      height: 30,
-      marginRight: 10,
+        width: 30,
+        height: 30,
+        marginRight: 10,
     },
     name: {
-      fontSize: 16,
-      marginTop: 5,
+        fontSize: 16,
+        marginTop: 5,
     },
     groupcontainer: {
         backgroundColor: '#2774AE',
         justifyContent: 'center',
-        flex:70,
+        flex: 70,
     },
     button: {
         alignItems: 'center',
@@ -133,7 +137,7 @@ const styles = StyleSheet.create({
         elevation: 3,
         backgroundColor: 'black',
         marginHorizontal: 10,
-      },
+    },
     text: {
         fontSize: 16,
         lineHeight: 21,
@@ -141,7 +145,7 @@ const styles = StyleSheet.create({
         letterSpacing: 0.25,
         color: 'white',
     },
-  });
+});
 
 export default PostFeed;
 
