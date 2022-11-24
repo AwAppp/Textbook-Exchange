@@ -12,13 +12,6 @@ const actions = [
         name: "new_post",
         position: 1
     },
-    {
-        text: "Back to Home",
-        icon: require("./../assets/pictures/plus.jpeg"),
-        name: "back_home",
-        position: 2
-    },
-
 ];
 
 class FloatButton extends Component {
@@ -56,7 +49,6 @@ class FilterBar extends Component {
 
 const PostFeed = (props) => {
     const [showAddPage, setShowAddPage] = useState(false);
-    const [update, setUpdate] = useState(0);
 
     return (
         <View style={styles.container}>
@@ -70,7 +62,7 @@ const PostFeed = (props) => {
                 </View>) : (
                 <View style={styles.groupcontainer}>
                     <FilterBar />
-                    <PostGroup />
+                    <PostGroup userid={props.userid} />
                 </View>
             )}
             <View style={styles.floatbutton}>

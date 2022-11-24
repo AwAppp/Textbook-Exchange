@@ -14,7 +14,7 @@ import {
 import {
     getFirestore,
     collection, setDoc, doc, getDoc, updateDoc, addDoc,
-    getDocs, query, where
+    getDocs, query, where, deleteDoc
 } from "firebase/firestore";
 
 import {
@@ -328,12 +328,7 @@ class Backend {
     }
 
 
-    // listPosts - an async function used to list all the posts
-    // from the firestor
-    // Parameters: None
-    // Return value: An array of posts in the posts collection
-    //                  from firestore
-    async listPoststest() {
+    /* async listPoststest() {
         try {
             let posts_list = [];
             collection(this.#userDataBase, "posts").get().then(function(querySnapshot) {
@@ -349,8 +344,13 @@ class Backend {
         } catch (error) {
             return error;
         }
-    }
-
+    } */
+    
+    // listPosts - an async function used to list all the posts
+    // from the firestor
+    // Parameters: None
+    // Return value: An array of posts in the posts collection
+    //                  from firestore
     async listPosts() {
         try {
             const querySnapshot = await getDocs(collection(this.#userDataBase, "posts"));
@@ -367,6 +367,15 @@ class Backend {
             return error;
         }
     }
+
+    // deletePost - an async function used to delete a post by post id
+    // in firestore
+    // parameter:   postId : String
+    // return value: None
+    async deletePost(postId) {
+        return await deleteDoc(doc(this.#userDataBase, "posts", postId));
+    }
+
     // getUserIcon - an async function used to the URL of user icon
     // parameters:  userID : String
     // return value:    icon URL : String

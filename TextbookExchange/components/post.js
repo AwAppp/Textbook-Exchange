@@ -1,12 +1,10 @@
 import { Title, Card, Button, Paragraph } from 'react-native-paper';
 import { StyleSheet, ScrollView, Image, Alert, BackHandler } from 'react-native';
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
 import Chat from "../components/Chat";
 
 import Backend from '../Backend.js';
-
-const data = require('./posttest.json');
 const backendInstance = new Backend();
 
 class Post {
@@ -24,9 +22,9 @@ class Post {
 }
 
 
-const SinglePost = ({postData}) => {
+const SinglePost = ({ postData, userid }) => {
     const navigation = useNavigation();
-    const navigateToChat = (async() => {
+    const navigateToChat = (async () => {
         try {
             let icon = await backendInstance.getUserIcon(postData.sellerID);
             console.log(icon.uri);
@@ -37,7 +35,7 @@ const SinglePost = ({postData}) => {
                 name: postData.sellerName,
                 image: icon_uri
             }, navigation);
-            } catch(error) {console.log(error);}
+        } catch (error) { console.log(error); }
     });
 
     const reportButtonTestAlert = () => {
@@ -50,10 +48,16 @@ const SinglePost = ({postData}) => {
         );
     };
 
+    /* useEffect(() => {
+        console.log("user id: ", userid);
+
+        console.log("sellerID: ", postData.sellerID);
+    }, []) */
+
     return (
         <Card style={styles.container}>
             <Card.Title title={postData.bookName} />
-            <Card.Cover source={{uri: postData.img}} />
+            <Card.Cover source={{ uri: postData.img }} />
             <Card.Content>
                 <Title>ISBN: {postData.isbn}</Title>
                 <Paragraph>${postData.price}</Paragraph>
@@ -66,8 +70,19 @@ const SinglePost = ({postData}) => {
                 <Button mode="contained" onPress={reportButtonTestAlert} style={styles.report_button}>
                     Report Post
                 </Button>
+                {userid == postData.sellerID ?
+                    <Button mode="contained"
+                        onPress={async () => {
+                            console.log("pressed delete");
+                        }}
+                        style={styles.report_button}>
+                        Delete Post
+                    </Button>
+                    :
+                    null
+                }
             </Card.Actions>
-        </Card>
+        </Card >
     );
 }
 
@@ -86,7 +101,7 @@ class PostList extends Component {
         bk.listPosts()
             .then(async (data) => {
                 // console.log(data);   // for debug
-                for(var i = 0; i < data.length; i++) {
+                for (var i = 0; i < data.length; i++) {
                     const postId = data[i].post_id;
 
                     // console.log(await bk.getBookCover(postId));
@@ -94,7 +109,7 @@ class PostList extends Component {
                     data[i]["img"] = (await bk.getBookCover(postId)).uri;
                 }
 
-                this.setState({data: data});
+                this.setState({ data: data });
             })
             .catch((error) => {
                 console.log(error);
@@ -109,6 +124,7 @@ class PostList extends Component {
                 postData={new Post(currData.title, currData.post_id,
                     currData.sellerid, currData.username, currData.price, currData.isbn,
                     currData.description, currData.img, currData.tag)}
+                userid={this.props.userid}
             />);
         }
         return listItems;
@@ -119,7 +135,7 @@ class PostGroup extends Component {
     render() {
         return (
             <ScrollView>
-                <PostList />
+                <PostList userid={this.props.userid} />
             </ScrollView>
         );
     }
