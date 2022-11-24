@@ -9,14 +9,14 @@ LogBox.ignoreAllLogs();//Ignore all log notifications
 
 const backendInstance = new Backend();
 
-const ChatHeader = ({navigation}) => {
+const ChatHeader = ({navigation, image}) => {
     return (
         <View style={styles.header}>
             <View style={{ marginLeft: 20 }}>
                 <Avatar
                     rounded
                     source={{
-                        uri: backendInstance.getCurrentUserInfo().avatar,
+                        uri: image,
                     }}
                 />
             </View>
@@ -34,20 +34,14 @@ const ChatHeader = ({navigation}) => {
 // input: for each chat session, get the chatting user (target)
 // the sender is the current authenticated user.
 const Chat = ({route, navigation}) => {
-    // console.log("Chat")
-    // console.log(route)
     const {userId, name, image} = route.params;
+    const sender = backendInstance.getCurrentUserId();
     const receiver = userId;
-    const currentUserInfo = backendInstance.getCurrentUserInfo();
-    const sender_email = currentUserInfo["email"];
-    const sender_avatar = currentUserInfo["avatar"];
-    const receiver_name = name;
-    // const navigation = useNavigation();
     const [messages, setMessages] = useState([]);
 
     // load the messages from backend
     const loadMessages = (async () => {
-        const msg_Lsts = await backendInstance.listMessagesByUser(sender_email, receiver);
+        const msg_Lsts = await backendInstance.listMessagesByUser(sender, receiver);
         setMessages(msg_Lsts);
     });
 
@@ -61,22 +55,21 @@ const Chat = ({route, navigation}) => {
             GiftedChat.append(previousMessages, messages)
         );
         const { _id, createdAt, text, user} = messages[0]
-        // console.log(messages[0]);
-        const message = {_id, sender_email, receiver, createdAt,  text, user}
+        const message = {_id, sender, receiver, createdAt,  text, user}
         try { backendInstance.addMessage(message);} catch(error) {console.log(error);}
     }, []);
 
     return (
         <View style={styles.container}>
-        <ChatHeader navigation={navigation}/>
+        <ChatHeader navigation={navigation} image={image}/>
         <GiftedChat
             messages={messages}
             showAvatarForEveryMessage={true}
             onSend={messages => onSend(messages)}
             user={{
-                _id: sender_email,
-                name: sender_email, // TODO: use a proper name rather than email name
-                avatar: sender_avatar
+                _id: userId,
+                name: name, 
+                avatar: image
             }}/>
         </View>
     );

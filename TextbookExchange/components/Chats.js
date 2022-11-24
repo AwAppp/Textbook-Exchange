@@ -24,9 +24,8 @@ const Chats = () => {
         try {
             console.log("querying for users");
             let userObjs = await backendInstance.listUserswithChats();
-            console.log(userObjs);
             setusers(userObjs);
-
+            // console.log(userObjs);
         } catch (err) {
             console.log(err);
         }
@@ -40,7 +39,6 @@ const Chats = () => {
     }, []);
 
     if (loading) {
-        console.log("loading");
         return (
             <View style={styles.centered}>
                 <ActivityIndicator size="large" color="#075E54"/>
@@ -68,7 +66,6 @@ const Chats = () => {
     const renderItem = ({item}) => (
         <ChatItem
             name={item.username}
-            image={item.avatar}
             userId={item.uid} />
     );
 

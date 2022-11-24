@@ -10,10 +10,11 @@ const data = require('./posttest.json');
 const backendInstance = new Backend();
 
 class Post {
-    constructor(bookName, postID, sellerID, price, isbn, description, img, tag) {
+    constructor(bookName, postID, sellerID, sellerName, price, isbn, description, img, tag) {
         this.postID = postID;
         this.bookName = bookName;
         this.sellerID = sellerID;
+        this.sellerName = sellerName;
         this.price = price;
         this.isbn = isbn;
         this.description = description;
@@ -28,11 +29,13 @@ const SinglePost = ({postData}) => {
     const navigateToChat = (async() => {
         try {
             let icon = await backendInstance.getUserIcon(postData.sellerID);
-            console.log(icon);
+            console.log(icon.uri);
+            console.log("before navigation");
+            let icon_uri = icon.uri;
             navigation.replace("Chat", {
                 userId: postData.sellerID,
-                name: postData.sellerID,
-                image: icon
+                name: postData.sellerName,
+                image: icon_uri
             }, navigation);
             } catch(error) {console.log(error);}
     });
@@ -58,7 +61,7 @@ const SinglePost = ({postData}) => {
             </Card.Content>
             <Card.Actions>
                 <Button mode="contained" onPress={navigateToChat} style={styles.button}>
-                    Contact {postData.sellerID}
+                    Contact {postData.sellerName}
                 </Button>
                 <Button mode="contained" onPress={reportButtonTestAlert} style={styles.report_button}>
                     Report Post
@@ -104,7 +107,7 @@ class PostList extends Component {
             let currData = this.state.data[i];
             listItems.push(<SinglePost
                 postData={new Post(currData.title, currData.post_id,
-                    currData.sellerid, currData.price, currData.isbn,
+                    currData.sellerid, currData.username, currData.price, currData.isbn,
                     currData.description, currData.img, currData.tag)}
             />);
         }
