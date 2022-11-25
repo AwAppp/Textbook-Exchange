@@ -1,16 +1,19 @@
-import { View, Text, StyleSheet, Image, Button } from "react-native";
+import { View, Text, StyleSheet, Image, Button, AcitvityIndicator } from "react-native";
 import { useEffect, useState } from "react";
 import { EvilIcons } from "@expo/vector-icons";
 import { Rating } from "react-native-ratings";
 import Backend from "../Backend.js"
 import * as ImagePicker from 'expo-image-picker';
+import { ActivityIndicator } from "react-native-paper";
+import { AuthErrorCodes } from "firebase/auth";
 
 const UserProfile = (props) => {
   const [profilePicture, setProfilePicture] = useState(null);
   const [name, setName] = useState("");
   const [buyerRating, setBuyerRating] = useState(0);
   const [sellerRating, setSellerRating] = useState(0);
-  const [update, setUpdate] = useState(0);
+  const [updating, setUpdating] = useState(false);
+  const [loading, setloading] = useState(true);
 
   const uid = props.uid;
 
@@ -18,6 +21,7 @@ const UserProfile = (props) => {
     // fetch profile picture. if none, set to default
 
     // setProfilePicture(<EvilIcons name="user" size={200} style={styles.profilePicture} />);
+    const bk = new Backend();
 
     // define method to fetch icon from storage
     const getIcon = async () => {
@@ -25,7 +29,7 @@ const UserProfile = (props) => {
 
       // console.log(imageResult); // for debug
 
-      console.log(new Date() + imageResult.uri);
+      // console.log(new Date() + imageResult.uri);
 
       if (imageResult.uri != null) {
         setProfilePicture(<Image
@@ -45,7 +49,6 @@ const UserProfile = (props) => {
     };
     // TODO: use the uid from props instead of the hard-coding one
 
-    const bk = new Backend();
 
 
     // define method to fetch infomation from firestore
@@ -78,8 +81,10 @@ const UserProfile = (props) => {
 
     getInfo();
 
+    setloading(false);
+
     // setName("John Doe");
-  }, [update]);
+  }, [updating, loading]);
 
   const RatingView = ({ ratingValue, ratingText }) => (
     <View style={styles.ratingView}>
@@ -96,50 +101,56 @@ const UserProfile = (props) => {
     </View>
   );
 
-  return (
-    <View style={{ marginTop: 50 }}>
-      <View style={styles.profilePictureView}>{profilePicture}</View>
+  if (loading || updating) {
+    return (<View style={{marginTop: 200}}> 
+      <ActivityIndicator size="large" />
+    </View>)
+  } else {
+    return (
+      <View style={{ marginTop: 50 }}>
+        <View style={styles.profilePictureView}>{profilePicture}</View>
 
-      <View>
-        <Button
-          title="Update Icon"
-          color="#33C5FF"
-          onPress={async () => {
-            // const uploaded_file = await DocumentPicker.getDocumentAsync();
+        <View>
+          <Button
+            title="Update Icon"
+            color="#33C5FF"
+            onPress={async () => {
+              // const uploaded_file = await DocumentPicker.getDocumentAsync();
 
-            const uploaded_file = await ImagePicker.launchImageLibraryAsync();
+              const uploaded_file = await ImagePicker.launchImageLibraryAsync();
 
-            // console.log(uploaded_file); // for debug
-            const bk = new Backend();
+              // console.log(uploaded_file); // for debug
+              const bk = new Backend();
 
-            if (uploaded_file != null && uploaded_file.assets != null) {
-              await bk.updateUserIcon(uid, await bk.getBlobFromURI(uploaded_file.assets[0].uri));
+              if (uploaded_file != null && uploaded_file.assets != null) {
+                
+                const waitAndRerender = async () => {
+                  setUpdating(true);
+                  await bk.updateUserIcon(uid, await bk.getBlobFromURI(uploaded_file.assets[0].uri));
+                  await new Promise(resolve => setTimeout(resolve, 3000));
+                  setUpdating(false);
+                }
 
-              const waitAndRerender = async () => {
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                /* setUpdate(update + 1);
+  
+                console.log(update); */
 
-                setUpdate(update + 1);
+                // console.log(update);
+
+                waitAndRerender();
+              } else {
+                console.log("error when fetch file from uri");
               }
+            }}
+          />
+        </View>
 
-              /* setUpdate(update + 1);
+        <Text style={styles.name}>{name}</Text>
 
-              console.log(update); */
-
-              console.log(update);
-
-              waitAndRerender();
-            } else {
-              console.log("error when fetch file from uri");
-            }
-          }}
-        />
+        <RatingsView />
       </View>
-
-      <Text style={styles.name}>{name}</Text>
-
-      <RatingsView />
-    </View>
-  );
+    );
+  }
 };
 
 const styles = StyleSheet.create({
@@ -170,6 +181,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
     padding: 10,
   },
+  activityView: {
+    alignItems: "center",
+    margin: 100
+  }
 });
 
 export default UserProfile;
