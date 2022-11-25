@@ -373,6 +373,8 @@ class Backend {
     // parameter:   postId : String
     // return value: None
     async deletePost(postId) {
+        /* console.log("deleting: ", postId); */
+
         return await deleteDoc(doc(this.#userDataBase, "posts", postId));
     }
 

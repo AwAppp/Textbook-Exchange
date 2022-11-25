@@ -2,6 +2,7 @@ import { Title, Card, Button, Paragraph } from 'react-native-paper';
 import { StyleSheet, ScrollView, Image, Alert, BackHandler } from 'react-native';
 import React, { Component, useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
+import { ActivityIndicator } from "react-native-paper";
 import Chat from "../components/Chat";
 
 import Backend from '../Backend.js';
@@ -22,7 +23,7 @@ class Post {
 }
 
 
-const SinglePost = ({ postData, userid }) => {
+const SinglePost = ({ postData, userid, postList }) => {
     const navigation = useNavigation();
     const navigateToChat = (async () => {
         try {
@@ -73,7 +74,10 @@ const SinglePost = ({ postData, userid }) => {
                 {userid == postData.sellerID ?
                     <Button mode="contained"
                         onPress={async () => {
-                            console.log("pressed delete");
+                            /* console.log("press the delete: ");
+                            console.log(postData.postID); */
+                            await backendInstance.deletePost(postData.postID);
+                            postList.load();
                         }}
                         style={styles.report_button}>
                         Delete Post
@@ -92,31 +96,47 @@ class PostList extends Component {
     // It will initialize the state of the component
     constructor(props) {
         super(props);
-        this.state = { data: [] };
+        this.state = {
+            data: [],
+            loading: true
+        };
     }
 
     componentDidMount() {
         const bk = new Backend();
 
-        bk.listPosts()
-            .then(async (data) => {
-                // console.log(data);   // for debug
-                for (var i = 0; i < data.length; i++) {
-                    const postId = data[i].post_id;
+        if (this.state.loading) {
+            bk.listPosts()
+                .then(async (data) => {
+                    // console.log(data);   // for debug
+                    for (var i = 0; i < data.length; i++) {
+                        const postId = data[i].post_id;
 
-                    // console.log(await bk.getBookCover(postId));
+                        // console.log(await bk.getBookCover(postId));
 
-                    data[i]["img"] = (await bk.getBookCover(postId)).uri;
-                }
+                        data[i]["img"] = (await bk.getBookCover(postId)).uri;
+                    }
 
-                this.setState({ data: data });
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+                    this.setState({ data: data, loading: false });
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+    }
+
+    load() {
+        this.setState({loading: true});
+        this.componentDidMount();
     }
 
     render() {
+        if (this.state.loading) {
+            return (
+                <ActivityIndicator style={{ marginTop: 200 }} size="large" />
+            );
+        }
+
         var listItems = [];
         for (var i = 0; i < this.state.data.length; i++) {
             let currData = this.state.data[i];
@@ -125,6 +145,7 @@ class PostList extends Component {
                     currData.sellerid, currData.username, currData.price, currData.isbn,
                     currData.description, currData.img, currData.tag)}
                 userid={this.props.userid}
+                postList={this}
             />);
         }
         return listItems;
