@@ -45,6 +45,9 @@ class FilterBar extends Component {
     }
 }
 
+const PostFilter = (props) => {
+    
+}
 
 
 const PostFeed = (props) => {
@@ -125,15 +128,15 @@ const styles = StyleSheet.create({
     button: {
         alignItems: 'center',
         justifyContent: 'center',
-        paddingVertical: 12,
-        paddingHorizontal: 20,
+        paddingVertical: 5,
+        paddingHorizontal: 6,
         borderRadius: 4,
         elevation: 3,
         backgroundColor: 'black',
         marginHorizontal: 10,
     },
     text: {
-        fontSize: 16,
+        fontSize: 15,
         lineHeight: 21,
         fontWeight: 'bold',
         letterSpacing: 0.25,
@@ -143,14 +146,3 @@ const styles = StyleSheet.create({
 
 export default PostFeed;
 
-/*
-{showAddPage ? ( 
-                <View style={styles.groupcontainer}>
-                    <AddPostPage />
-                </View> ) : ( 
-                <View style={styles.groupcontainer}>
-                    <FilterBar /> 
-                    <PostGroup /> 
-                </View>
-            )}
-*/
