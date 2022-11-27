@@ -317,11 +317,17 @@ class Backend {
         const messageDB = collection(this.#userDataBase, "messages");
         const q_msgs = query(messageDB, where("sender", "==", sender),
             where("receiver", "==", receiver));
-        const msg_snapshot = await getDocs(q_msgs);
+        const r_msgs = query(messageDB, where("receiver", "==", sender),
+            where("sender", "==", receiver));
+        const msg_snapshot_q = await getDocs(q_msgs);
+        const msg_snapshot_r = await getDocs(r_msgs);
         var msg_Lsts = [];
-        msg_snapshot.forEach(doc => {
+        msg_snapshot_q.forEach(doc => {
             msg_Lsts.push(new Message_parse(doc));
         });
+        msg_snapshot_r.forEach(doc => {
+            msg_Lsts.push(new Message_parse(doc));
+        })
 
         msg_Lsts.sort((a, b) => a.createdAt <= b.createdAt);
         return msg_Lsts;

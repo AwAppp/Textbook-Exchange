@@ -15,53 +15,27 @@ const backendInstance = new Backend();
 
 const Chats = () => {
     const [loading, setloading] = useState(false);
-    const [error, seterror] = useState(false);
     const [refresh, setrefresh] = useState(false);
     const [users, setusers] = useState([]);
     const loadUsers = (async () => {
         setrefresh(true);
-        seterror(null);
         try {
             console.log("querying for users");
             let userObjs = await backendInstance.listUserswithChats();
             setusers(userObjs);
-            // console.log(userObjs);
+            console.log(userObjs);
+            setrefresh(false);
         } catch (err) {
             console.log(err);
         }
-        setrefresh(false);
     });
 
     useEffect(() => {
-        setloading(false);
+        setloading(true);
         loadUsers().catch(console.error);
-        setrefresh(false);
+        setloading(false);
+        console.log(loading);
     }, []);
-
-    if (loading) {
-        return (
-            <View style={styles.centered}>
-                <ActivityIndicator size="large" color="#075E54"/>
-            </View>
-        );
-    }
-
-    if (error) {
-        return (
-            <View style={styles.centered}>
-                <Text>An error Occurred</Text>
-                <Button title="Try Again" onPress={loadUsers} color="#075E54"/>
-            </View>
-        );
-    }
-
-    // handle when user length is zero
-    // if (!loading && Users.length == 0)
-    const Item = ({name}) => (
-        <View>
-            <Text>{name}</Text>
-        </View>
-    );
 
     const renderItem = ({item}) => (
         <ChatItem
@@ -69,16 +43,24 @@ const Chats = () => {
             userId={item.uid} />
     );
 
-    return (
-        <View style={styles.chatList}>
-            <FlatList 
-                onRefresh={loadUsers} 
-                refreshing={refresh}
-                data={users}
-                renderItem={renderItem} 
-            />
-        </View>
-    );
+    if (loading) {
+        return (
+            <View style={styles.centered}>
+                <ActivityIndicator size="large" color="#075E54"/>
+            </View>
+        );
+    } else {
+        return (
+            <View style={styles.chatList}>
+                <FlatList 
+                    onRefresh={loadUsers} 
+                    refreshing={refresh}
+                    data={users}
+                    renderItem={renderItem} 
+                />
+            </View>
+        );
+    }
 };
 
 
