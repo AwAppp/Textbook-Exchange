@@ -1,15 +1,16 @@
 import { Title, Card, Button, Paragraph } from 'react-native-paper';
-import { StyleSheet, ScrollView, Image, Alert, BackHandler } from 'react-native';
+import { View, StyleSheet, ScrollView, Image, Alert, BackHandler } from 'react-native';
 import React, { Component, useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
 import { ActivityIndicator } from "react-native-paper";
 import Chat from "../components/Chat";
 
 import Backend from '../Backend.js';
+//import { View } from 'react-native-web';
 const backendInstance = new Backend();
 
 class Post {
-    constructor(bookName, postID, sellerID, sellerName, price, isbn, description, img, tag) {
+    constructor(bookName, postID, sellerID, sellerName, price, isbn, description, img, type) {
         this.postID = postID;
         this.bookName = bookName;
         this.sellerID = sellerID;
@@ -61,27 +62,36 @@ const SinglePost = ({ postData, userid, postList }) => {
             <Card.Cover source={{uri: postData.img}} style={{height:500}}/>
             <Card.Content>
                 <Title>ISBN: {postData.isbn}</Title>
+                <Paragraph style={{fontSize:18, fontWeight: 'bold'}}>{postData.type}</Paragraph>
                 <Paragraph>${postData.price}</Paragraph>
                 <Paragraph>{postData.description}</Paragraph>
             </Card.Content>
             <Card.Actions>
-                <Button mode="contained" onPress={navigateToChat} style={styles.button}>
-                    Contact {postData.sellerName}
-                </Button>
-                <Button mode="contained" onPress={reportButtonTestAlert} style={styles.report_button}>
-                    Report Post
-                </Button>
+                {userid != postData.sellerID ?
+                    <View>
+                        <Button mode="contained" onPress={navigateToChat} style={styles.button}>
+                            Contact {postData.sellerName}
+                        </Button>
+                        <Button mode="contained" onPress={reportButtonTestAlert} style={styles.report_button}>
+                            Report Post
+                        </Button>
+                    </View>
+                    :
+                    null
+                }
                 {userid == postData.sellerID ?
-                    <Button mode="contained"
-                        onPress={async () => {
-                            /* console.log("press the delete: ");
-                            console.log(postData.postID); */
-                            await backendInstance.deletePost(postData.postID);
-                            postList.load();
-                        }}
-                        style={styles.report_button}>
-                        Delete Post
-                    </Button>
+                    <View style={styles.buttonContainer}>
+                        <Button mode="contained"
+                            onPress={async () => {
+                                /* console.log("press the delete: ");
+                                console.log(postData.postID); */
+                                await backendInstance.deletePost(postData.postID);
+                                postList.load();
+                            }}
+                            style={styles.report_button}>
+                            Delete Post
+                        </Button>
+                    </View>
                     :
                     null
                 }
@@ -143,7 +153,7 @@ class PostList extends Component {
             listItems.push(<SinglePost
                 postData={new Post(currData.title, currData.post_id,
                     currData.sellerid, currData.username, currData.price, currData.isbn,
-                    currData.description, currData.img, currData.tag)}
+                    currData.description, currData.img, currData.type)}
                 userid={this.props.userid}
                 postList={this}
             />);
@@ -180,17 +190,22 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: "#FFD100",
         margin: 5,
+        flex:7,
     },
     report_button: {
         backgroundColor: "#00008B",
         margin: 5,
+        flex:7,
     },
     images: {
         flex: 1,
         width: '100%',
         height: '100%',
         resizeMode: 'contain',
-    }
+    },
+    buttonContainer: {
+        flex: 1,
+      }
 });
 
 
