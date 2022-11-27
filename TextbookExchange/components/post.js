@@ -165,8 +165,7 @@ class PostList extends Component {
 class PostGroup extends Component {
     constructor(props) {
         super(props);
-        this.buy = props.buy;
-        this.sell = props.sell;
+
     }
     render() {
         console.log("post group");
@@ -174,7 +173,7 @@ class PostGroup extends Component {
         console.log(this.sell);
         return (
             <ScrollView>
-                <PostList userid={this.props.userid} />
+                <PostList userid={this.props.userid} buy={this.props.buy} sell={this.props.sell} />
             </ScrollView>
         );
     }

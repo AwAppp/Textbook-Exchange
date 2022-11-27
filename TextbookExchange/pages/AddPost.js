@@ -1,4 +1,4 @@
-import { ScrollView, TextInput, Alert, StyleSheet, Text, View, Pressable, Button, Image } from 'react-native';
+import { ScrollView, TextInput, Alert, StyleSheet, Text, View, Pressable, Image } from 'react-native';
 import React, { Component } from "react";
 import { ActivityIndicator } from "react-native-paper";
 import * as ImagePicker from 'expo-image-picker';
