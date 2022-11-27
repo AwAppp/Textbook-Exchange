@@ -1,90 +1,113 @@
-import { View, Text, StyleSheet, Image, Button, AcitvityIndicator } from "react-native";
-import { useEffect, useState } from "react";
+import { View, Text, StyleSheet, Image, Button } from "react-native";
+import { useEffect, useRef, useState } from "react";
 import { EvilIcons } from "@expo/vector-icons";
 import { Rating } from "react-native-ratings";
-import Backend from "../Backend.js"
-import * as ImagePicker from 'expo-image-picker';
-import { ActivityIndicator } from "react-native-paper";
-import { AuthErrorCodes } from "firebase/auth";
+import Backend from "../Backend.js";
+import * as ImagePicker from "expo-image-picker";
+import { ActivityIndicator, Menu, IconButton, Button as PaperButton } from "react-native-paper";
 
-const UserProfile = (props) => {
+// TODO: Add prop isNotSelf
+const UserProfile = ({ uid }) => {
   const [profilePicture, setProfilePicture] = useState(null);
   const [name, setName] = useState("");
   const [buyerRating, setBuyerRating] = useState(0);
   const [sellerRating, setSellerRating] = useState(0);
   const [updating, setUpdating] = useState(false);
-  const [loading, setloading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [contextMenuIsVisible, setContextMenuIsVisible] = useState(false);
 
-  const uid = props.uid;
+  const contextMenuButtonRef = useRef();
+
+  const bk = new Backend();
+
+  // TODO: Remove this var
+  const isNotSelf = true;
 
   useEffect(() => {
-    // fetch profile picture. if none, set to default
-
-    // setProfilePicture(<EvilIcons name="user" size={200} style={styles.profilePicture} />);
-    const bk = new Backend();
-
     // define method to fetch icon from storage
     const getIcon = async () => {
       const imageResult = await bk.getUserIcon(uid);
-
-      // console.log(imageResult); // for debug
-
-      // console.log(new Date() + imageResult.uri);
-
       if (imageResult.uri != null) {
-        setProfilePicture(<Image
-          source={{
-            uri: imageResult.uri,
-            cache: 'reload'
-          }}
-          style={{ width: 200, height: 200 }}
-          key={new Date()}
-        />);
+        setProfilePicture(
+          <Image
+            source={{ uri: imageResult.uri, cache: "reload" }}
+            style={{ width: 200, height: 200 }}
+            key={new Date()}
+          />
+        );
       } else {
-        setProfilePicture(<EvilIcons name="user"
-          size={200}
-          style={styles.profilePicture}
-        />);
+        setProfilePicture(<EvilIcons name="user" size={200} style={styles.profilePicture} />);
       }
     };
-    // TODO: use the uid from props instead of the hard-coding one
-
-
 
     // define method to fetch infomation from firestore
     const getInfo = async () => {
-      const user_info = await bk.getUserInfoByUid(uid);
+      const userInfo = await bk.getUserInfoByUid(uid);
 
       // console.log(name); // for debug
 
-      if (user_info.username != null) {
-        setName(user_info.username);
+      if (userInfo.username != null) {
+        setName(userInfo.username);
       } else {
         setName("error when set name");
       }
 
-      if (user_info.buyerRating != null) {
-        setBuyerRating(user_info.buyerRating);
+      if (userInfo.buyerRating != null) {
+        setBuyerRating(userInfo.buyerRating);
       } else {
         setBuyerRating(0);
       }
 
-      if (user_info.sellerRating != null) {
-        setSellerRating(user_info.sellerRating);
+      if (userInfo.sellerRating != null) {
+        setSellerRating(userInfo.sellerRating);
       } else {
         setSellerRating(0);
       }
-    }
+    };
 
     // call the methods to get result
     getIcon();
-
     getInfo();
 
-    setloading(false);
-
-    // setName("John Doe");
+    setLoading(false);
   }, [updating, loading]);
+
+  const openContextMenu = () => setContextMenuIsVisible(true);
+  const closeContextMenu = () => setContextMenuIsVisible(false);
+
+  const onPressRate = () => {
+    // popup rate modal, has buyer or seller toggles and then a star rating component
+  };
+
+  const onPressBlock = () => {};
+  const onPressReport = () => {};
+
+  const UpdatePhotoButton = () => (
+    <Button
+      title="Update Photo"
+      color="#33C5FF"
+      onPress={async () => {
+        const uploaded_file = await ImagePicker.launchImageLibraryAsync();
+
+        if (uploaded_file != null && uploaded_file.assets != null) {
+          const waitAndRerender = async () => {
+            setUpdating(true);
+            await bk.updateUserIcon(uid, await bk.getBlobFromURI(uploaded_file.assets[0].uri));
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+            setUpdating(false);
+          };
+
+          waitAndRerender();
+        } else {
+          console.log("error when fetch file from uri");
+        }
+      }}
+    />
+  );
+
+  const ContextMenuButton = () => (
+    <>{isNotSelf ? <IconButton icon="dots-horizontal" onPress={openContextMenu} /> : null}</>
+  );
 
   const RatingView = ({ ratingValue, ratingText }) => (
     <View style={styles.ratingView}>
@@ -102,50 +125,34 @@ const UserProfile = (props) => {
   );
 
   if (loading || updating) {
-    return (<View style={{marginTop: 200}}> 
-      <ActivityIndicator size="large" />
-    </View>)
+    return (
+      <View style={{ marginTop: 200 }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
   } else {
     return (
       <View style={{ marginTop: 50 }}>
         <View style={styles.profilePictureView}>{profilePicture}</View>
 
-        <View>
-          <Button
-            title="Update Icon"
-            color="#33C5FF"
-            onPress={async () => {
-              // const uploaded_file = await DocumentPicker.getDocumentAsync();
+        <UpdatePhotoButton />
 
-              const uploaded_file = await ImagePicker.launchImageLibraryAsync();
+        <View style={styles.nameAndContextMenu}>
+          <Text style={styles.name}>{name}</Text>
 
-              // console.log(uploaded_file); // for debug
-              const bk = new Backend();
-
-              if (uploaded_file != null && uploaded_file.assets != null) {
-                
-                const waitAndRerender = async () => {
-                  setUpdating(true);
-                  await bk.updateUserIcon(uid, await bk.getBlobFromURI(uploaded_file.assets[0].uri));
-                  await new Promise(resolve => setTimeout(resolve, 3000));
-                  setUpdating(false);
-                }
-
-                /* setUpdate(update + 1);
-  
-                console.log(update); */
-
-                // console.log(update);
-
-                waitAndRerender();
-              } else {
-                console.log("error when fetch file from uri");
-              }
-            }}
-          />
+          <Menu
+            visible={contextMenuIsVisible}
+            onDismiss={closeContextMenu}
+            anchor={<ContextMenuButton />}
+            anchorPosition="bottom"
+            style={styles.contextMenu}
+          >
+            {/* TODO: Add icons to each of the options */}
+            <Menu.Item onPress={onPressRate} title="Rate" />
+            <Menu.Item onPress={onPressBlock} title="Block" />
+            <Menu.Item onPress={onPressReport} title="Report" />
+          </Menu>
         </View>
-
-        <Text style={styles.name}>{name}</Text>
 
         <RatingsView />
       </View>
@@ -162,9 +169,17 @@ const styles = StyleSheet.create({
     color: "black",
     resizeMode: "contain",
   },
+  nameAndContextMenu: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   name: {
     textAlign: "center",
     fontSize: 30,
+  },
+  contextMenu: {
+    paddingTop: 30,
   },
   ratingsView: {
     marginTop: 20,
@@ -183,8 +198,8 @@ const styles = StyleSheet.create({
   },
   activityView: {
     alignItems: "center",
-    margin: 100
-  }
+    margin: 100,
+  },
 });
 
 export default UserProfile;
