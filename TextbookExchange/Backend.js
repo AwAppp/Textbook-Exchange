@@ -60,7 +60,7 @@ class Backend {
     // current user info:
     // return value: email of the current user
     getCurrentUserId() {
-        return this.#authenticationService.currentUser.uid;    
+        return this.#authenticationService.currentUser.uid;
     }
 
     // returns collection for a specified collection name
@@ -141,7 +141,7 @@ class Backend {
 
             return docSnap.data();
         } else {
-            return {"error_message": "No such document"};
+            return { "error_message": "No such document" };
         }
     }
 
@@ -158,7 +158,7 @@ class Backend {
 
             return docSnap.data();
         } else {
-            return {"error_message": "No such document"};
+            return { "error_message": "No such document" };
         }
     }
 
@@ -277,14 +277,14 @@ class Backend {
         msg_rec_snapshot.forEach((doc) => {
             let sender = doc.data().sender;
             let receiver = doc.data().receiver;
-            if (sender !=  curr_user && ! userLsts.includes(sender)) { userLsts.push(sender);}
-            if (receiver !=  curr_user && ! userLsts.includes(receiver)) {userLsts.push(receiver);}
+            if (sender != curr_user && !userLsts.includes(sender)) { userLsts.push(sender); }
+            if (receiver != curr_user && !userLsts.includes(receiver)) { userLsts.push(receiver); }
         })
         msg_sed_snapshot.forEach((doc) => {
             let sender = doc.data().sender;
             let receiver = doc.data().receiver;
-            if (sender !=  curr_user && ! userLsts.includes(sender)) { userLsts.push(sender);}
-            if (receiver !=  curr_user && ! userLsts.includes(receiver)) {userLsts.push(receiver);}
+            if (sender != curr_user && !userLsts.includes(sender)) { userLsts.push(sender); }
+            if (receiver != curr_user && !userLsts.includes(receiver)) { userLsts.push(receiver); }
         })
         // get the users from the user db
         var userObjs = []
@@ -316,14 +316,14 @@ class Backend {
     async listMessagesByUser(sender, receiver) {
         const messageDB = collection(this.#userDataBase, "messages");
         const q_msgs = query(messageDB, where("sender", "==", sender),
-                                        where("receiver", "==", receiver));
+            where("receiver", "==", receiver));
         const msg_snapshot = await getDocs(q_msgs);
         var msg_Lsts = [];
         msg_snapshot.forEach(doc => {
             msg_Lsts.push(new Message_parse(doc));
-         });
+        });
 
-        msg_Lsts.sort((a,b) => a.createdAt <= b.createdAt);
+        msg_Lsts.sort((a, b) => a.createdAt <= b.createdAt);
         return msg_Lsts;
     }
 
@@ -345,7 +345,7 @@ class Backend {
             return error;
         }
     } */
-    
+
     // listPosts - an async function used to list all the posts
     // from the firestor
     // Parameters: None
@@ -385,10 +385,10 @@ class Backend {
         try {
             const pathReference = ref(this.#storage, 'icons/' + String(userID) + '.jpg');
 
-            return {"uri": await getDownloadURL(pathReference)};
-        } catch(error) {
+            return { "uri": await getDownloadURL(pathReference) };
+        } catch (error) {
             console.log(error);
-            return {"error": error, "uri": null};
+            return { "error": error, "uri": null };
         }
     }
 
@@ -418,9 +418,9 @@ class Backend {
         try {
             const pathReference = ref(this.#storage, 'posts/' + String(postId) + '.jpg');
 
-            return {"uri": await getDownloadURL(pathReference)};
-        } catch(error) {
-            return {"error": error, "uri": null};
+            return { "uri": await getDownloadURL(pathReference) };
+        } catch (error) {
+            return { "error": error, "uri": null };
         }
     }
 
@@ -432,6 +432,52 @@ class Backend {
         const picRef = ref(this.#storage, 'posts/' + String(postId) + '.jpg');
 
         uploadBytes(picRef, pic);
+    }
+
+    // getSellingPosts - an async method used to get all the selling posts
+    // parameter: None
+    // return value: an array of posts that are selling posts
+    async getSellingPosts() {
+        try {
+            const q = query(collection(this.#userDataBase, "posts"), where("type", "==", "Selling"));
+
+            const querySnapshot = await getDocs(q);
+
+            let posts_list = [];
+
+            querySnapshot.forEach((doc) => {
+                // console.log(doc.id, "=>", doc.data());
+                posts_list.push(doc.data());
+            })
+
+            return posts_list;
+        }
+        catch (error) {
+            return error;
+        }
+    }
+
+    // getBuyingPosts - an async method used to get all the buying posts
+    // parameter: None
+    // return value: an array of posts that are buying posts
+    async getBuyingPosts() {
+        try {
+            const q = query(collection(this.#userDataBase, "posts"), where("type", "==", "Buying"));
+
+            const querySnapshot = await getDocs(q);
+
+            let posts_list = [];
+
+            querySnapshot.forEach((doc) => {
+                // console.log(doc.id, "=>", doc.data());
+                posts_list.push(doc.data());
+            })
+
+            return posts_list;
+        }
+        catch (error) {
+            return error;
+        }
     }
 }
 

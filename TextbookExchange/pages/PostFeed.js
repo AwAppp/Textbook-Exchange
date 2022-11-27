@@ -52,6 +52,14 @@ const PostFeed = (props) => {
     const [filterSell, setFilterSell] = useState(false);
     const [filterBuy, setFilterBuy] = useState(false);
 
+    useEffect(
+        () => {
+            console.log("filterSell", filterSell);
+            console.log("filterBuy", filterBuy);
+        }
+        , [filterBuy, filterSell]
+    );
+
     return (
         <View style={styles.container}>
             {showAddPage ? (
@@ -63,22 +71,30 @@ const PostFeed = (props) => {
                 </View>) : (
                 <View style={styles.groupcontainer}>
                     <View style={styles.fixToText}>
-                        <Pressable style={styles.button} onPress={() => {setFilterSell(true); 
-                                                                        setFilterBuy(false);
-                                                                        Alert.alert('Filter by posts selling books');
-                                                                        console.log('set to sell');}}>
+                        <Pressable style={filterSell ? styles.pressedButton : styles.button}
+                            onPress={() => {
+                                setFilterSell(true);
+                                setFilterBuy(false);
+                                Alert.alert('Filter by posts selling books');
+                                console.log('set to sell');
+                            }}>
                             <Text style={styles.text}>Looking to Sell</Text>
                         </Pressable>
-                        <Pressable style={styles.button} onPress={() => {setFilterBuy(true);
-                                                                        setFilterSell(false);
-                                                                        Alert.alert('Filter by posts looking to buy books');
-                                                                        console.log('set to buy');}}>
+                        <Pressable style={filterBuy ? styles.pressedButton : styles.button} 
+                        onPress={() => {
+                            setFilterBuy(true);
+                            setFilterSell(false);
+                            Alert.alert('Filter by posts looking to buy books');
+                            console.log('set to buy');
+                        }}>
                             <Text style={styles.text}>Looking to Buy</Text>
                         </Pressable>
-                        <Pressable style={styles.button} onPress={() => {setFilterBuy(false);
-                                                                        setFilterSell(false);
-                                                                        Alert.alert('Reset View');
-                                                                        console.log('reset view');}}>
+                        <Pressable style={styles.button} onPress={() => {
+                            setFilterBuy(false);
+                            setFilterSell(false);
+                            Alert.alert('Reset View');
+                            console.log('reset view');
+                        }}>
                             <Text style={styles.text}>Reset View</Text>
                         </Pressable>
                     </View>
@@ -116,7 +132,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginVertical: 20,
-        marginHorizontal:5,
+        marginHorizontal: 5,
     },
     space: {
         paddingVertical: 12,
@@ -153,6 +169,18 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
         marginHorizontal: 10,
     },
+    pressedButton:
+    {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 5,
+        paddingHorizontal: 6,
+        borderRadius: 4,
+        elevation: 3,
+        backgroundColor: 'pink',
+        marginHorizontal: 10,
+    }
+    ,
     text: {
         fontSize: 15,
         lineHeight: 21,

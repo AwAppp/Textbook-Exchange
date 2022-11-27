@@ -6,6 +6,7 @@ import { ActivityIndicator } from "react-native-paper";
 import Chat from "../components/Chat";
 
 import Backend from '../Backend.js';
+import { TEST_ID } from 'react-native-gifted-chat';
 //import { View } from 'react-native-web';
 const backendInstance = new Backend();
 
@@ -59,10 +60,10 @@ const SinglePost = ({ postData, userid, postList }) => {
     return (
         <Card style={styles.container}>
             <Card.Title title={postData.bookName} />
-            <Card.Cover source={{uri: postData.img}} style={{height:500}}/>
+            <Card.Cover source={{ uri: postData.img }} style={{ height: 500 }} />
             <Card.Content>
                 <Title>ISBN: {postData.isbn}</Title>
-                <Paragraph style={{fontSize:18, fontWeight: 'bold'}}>{postData.type}</Paragraph>
+                <Paragraph style={{ fontSize: 18, fontWeight: 'bold' }}>{postData.type}</Paragraph>
                 <Paragraph>${postData.price}</Paragraph>
                 <Paragraph>{postData.description}</Paragraph>
             </Card.Content>
@@ -115,29 +116,80 @@ class PostList extends Component {
     componentDidMount() {
         const bk = new Backend();
 
+        console.log("In Post List: buy", this.props.buy);
+        console.log("In Post List: sell", this.props.sell);
+        console.log("In Post List: loading", this.state.loading);
+
         if (this.state.loading) {
-            bk.listPosts()
-                .then(async (data) => {
-                    // console.log(data);   // for debug
-                    for (var i = 0; i < data.length; i++) {
-                        const postId = data[i].post_id;
+            if (this.props.buy) {
+                console.log("enter getBuyingPosts");
+                bk.getBuyingPosts()
+                    .then(async (data) => {
+                        console.log(data);   // for debug
+                        for (var i = 0; i < data.length; i++) {
+                            const postId = data[i].post_id;
 
-                        // console.log(await bk.getBookCover(postId));
+                            console.log(await bk.getBookCover(postId));
 
-                        data[i]["img"] = (await bk.getBookCover(postId)).uri;
-                    }
+                            data[i]["img"] = (await bk.getBookCover(postId)).uri;
+                        }
 
-                    this.setState({ data: data, loading: false });
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+                        this.setState({ data: data, loading: false });
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            }
+            else if (this.props.sell) {
+                console.log("entering getSellPost....")
+                bk.getSellingPosts()
+                    .then(async (data) => {
+                        console.log(data);   // for debug
+                        for (var i = 0; i < data.length; i++) {
+                            const postId = data[i].post_id;
+
+                            console.log(await bk.getBookCover(postId));
+
+                            data[i]["img"] = (await bk.getBookCover(postId)).uri;
+                        }
+
+                        this.setState({ data: data, loading: false });
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            }
+            else {
+                bk.listPosts()
+                    .then(async (data) => {
+                        // console.log(data);   // for debug
+                        for (var i = 0; i < data.length; i++) {
+                            const postId = data[i].post_id;
+
+                            // console.log(await bk.getBookCover(postId));
+
+                            data[i]["img"] = (await bk.getBookCover(postId)).uri;
+                        }
+
+                        this.setState({ data: data, loading: false });
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            }
         }
     }
 
     load() {
-        this.setState({loading: true});
-        this.componentDidMount();
+        this.setState({ loading: true }, this.componentDidMount);
+    }
+
+    componentDidUpdate(prevProps) {
+        console.log(prevProps);
+        console.log(this.props);
+        if (this.props.buy !== prevProps.buy || this.props.sell !== prevProps.sell) {
+            this.load();
+        }
     }
 
     render() {
@@ -168,9 +220,9 @@ class PostGroup extends Component {
 
     }
     render() {
-        console.log("post group");
+        /* console.log("post group");
         console.log(this.buy);
-        console.log(this.sell);
+        console.log(this.sell); */
         return (
             <ScrollView>
                 <PostList userid={this.props.userid} buy={this.props.buy} sell={this.props.sell} />
@@ -189,12 +241,12 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: "#FFD100",
         margin: 5,
-        flex:7,
+        flex: 7,
     },
     report_button: {
         backgroundColor: "#00008B",
         margin: 5,
-        flex:7,
+        flex: 7,
     },
     images: {
         flex: 1,
@@ -204,7 +256,7 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         flex: 1,
-      }
+    }
 });
 
 
