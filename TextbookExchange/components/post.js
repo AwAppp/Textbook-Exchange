@@ -51,7 +51,7 @@ const SinglePost = ({postData}) => {
     return (
         <Card style={styles.container}>
             <Card.Title title={postData.bookName} />
-            <Card.Cover source={{uri: postData.img}} />
+            <Card.Cover source={{uri: postData.img}} style={{height:500}}/>
             <Card.Content>
                 <Title>ISBN: {postData.isbn}</Title>
                 <Paragraph>${postData.price}</Paragraph>
