@@ -29,7 +29,7 @@ function Home(props) {
           </View>
         )}
       />
-      <Tab.Screen name="Profile" children={() => <UserProfile uid={props.uid} />} />
+      <Tab.Screen name="Profile" children={() => <UserProfile uid={props.uid} isSelf={true} />} />
       <Tab.Screen name="Chat" children={() => <Chats />} />
     </Tab.Navigator>
   );
@@ -59,6 +59,7 @@ export default class App extends Component {
             />
             <Stack.Screen name="Register" component={Register} />
             <Stack.Screen name="Home" children={() => <Home uid={this.state.uid} />} />
+            <Stack.Screen name="Profile" component={UserProfile} />
             <Stack.Screen name="Chats" component={Chats} />
             <Stack.Screen name="Chat" component={Chat} />
           </Stack.Navigator>

@@ -27,17 +27,12 @@ class Post {
 
 const SinglePost = ({ postData, userid, postList }) => {
     const navigation = useNavigation();
-    const navigateToChat = (async () => {
+    const navigateToUserProfile = (async () => {
         try {
-            let icon = await backendInstance.getUserIcon(postData.sellerID);
-            console.log(icon.uri);
             console.log("before navigation");
-            let icon_uri = icon.uri;
-            navigation.replace("Chat", {
-                userId: postData.sellerID,
-                name: postData.sellerName,
-                image: icon_uri
-            }, navigation);
+            navigation.replace("Profile", {
+                uid: postData.sellerID,
+            });
         } catch (error) { console.log(error); }
     });
 
@@ -70,8 +65,8 @@ const SinglePost = ({ postData, userid, postList }) => {
             <Card.Actions>
                 {userid != postData.sellerID ?
                     <View>
-                        <Button mode="contained" onPress={navigateToChat} style={styles.button}>
-                            Contact {postData.sellerName}
+                        <Button mode="contained" onPress={navigateToUserProfile} style={styles.button}>
+                            {postData.sellerName}'s Profile
                         </Button>
                         <Button mode="contained" onPress={reportButtonTestAlert} style={styles.report_button}>
                             Report Post

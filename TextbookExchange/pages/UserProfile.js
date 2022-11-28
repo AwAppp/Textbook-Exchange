@@ -2,15 +2,15 @@ import * as ImagePicker from "expo-image-picker";
 
 import { ActivityIndicator, Dialog, IconButton, Menu, Paragraph, RadioButton } from "react-native-paper";
 import { BottomSheetModal, BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { Button, Image, StyleSheet, Text, View } from "react-native";
+import { Button, Image, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { useEffect, useRef, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 
 import Backend from "../Backend.js";
 import { EvilIcons } from "@expo/vector-icons";
 import { Rating } from "react-native-ratings";
 
-// TODO: Add prop isNotSelf
-const UserProfile = ({ uid, isNotSelf }) => {
+const UserProfile = ({ uid, isSelf }) => {
   const [profilePicture, setProfilePicture] = useState(null);
   const [name, setName] = useState("");
   const [buyerRating, setBuyerRating] = useState(0);
@@ -29,10 +29,9 @@ const UserProfile = ({ uid, isNotSelf }) => {
   const contextMenuButtonRef = useRef();
   const ratingSheetRef = useRef();
 
-  const bk = new Backend();
+  const navigation = useNavigation();
 
-  // TODO: Remove this var
-  // const isNotSelf = true;
+  const bk = new Backend();
 
   useEffect(() => {
     // define method to fetch icon from storage
@@ -91,6 +90,26 @@ const UserProfile = ({ uid, isNotSelf }) => {
   const closeBlockDialog = () => setBlockDialogIsVisible(false);
   const openReportDialog = () => setReportDialogIsVisible(true);
   const closeReportDialog = () => setReportDialogIsVisible(false);
+
+  const onPressChat = async () => {
+    try {
+      let icon = await bk.getUserIcon(uid);
+      console.log(icon.uri);
+      console.log("before navigation");
+      let icon_uri = icon.uri;
+      navigation.replace(
+        "Chat",
+        {
+          userId: uid,
+          name: name,
+          image: icon_uri,
+        },
+        navigation
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const onPressRate = () => {
     closeContextMenu();
@@ -161,7 +180,7 @@ const UserProfile = ({ uid, isNotSelf }) => {
   );
 
   const ContextMenuButton = () => (
-    <>{isNotSelf ? <IconButton icon="dots-horizontal" onPress={openContextMenu} /> : null}</>
+    <>{!isSelf ? <IconButton icon="dots-horizontal" onPress={openContextMenu} /> : null}</>
   );
 
   const RatingView = ({ ratingValue, ratingText }) => (
@@ -220,6 +239,14 @@ const UserProfile = ({ uid, isNotSelf }) => {
     return (
       <BottomSheetModalProvider>
         <View style={{ flex: 1, marginTop: 50 }}>
+          <TouchableOpacity
+            style={{ marginLeft: 20 }}
+            onPress={() => {
+              navigation.replace("Home");
+            }}
+          >
+            <Text>Back</Text>
+          </TouchableOpacity>
           <View style={styles.profilePictureView}>{profilePicture}</View>
 
           <UpdatePhotoButton />
@@ -235,6 +262,7 @@ const UserProfile = ({ uid, isNotSelf }) => {
               style={styles.contextMenu}
             >
               {/* TODO: Add icons to each of the options */}
+              <Menu.Item onPress={onPressChat} title="Chat" />
               <Menu.Item onPress={onPressRate} title="Rate" />
               <Menu.Item onPress={onPressBlock} title="Block" />
               <Menu.Item onPress={onPressReport} title="Report" />
