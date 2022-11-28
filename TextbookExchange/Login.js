@@ -23,7 +23,7 @@ function Register () {
       <Text style={styles.description}>Register a new account</Text>
        <RegisterForm navigation={navigation}/>
       <Text style={styles.description}>Have an account?</Text>
-       <Button onPress={() => this.props.navigation.navigate('Login')} title="Go back"/>
+       <Button onPress={() => navigation.navigate('Login')} title="Go back"/>
      </View>
   )
 }
@@ -209,6 +209,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 4,
     borderColor: '#000000',
+
+
+    //borderBottomColor: '#000000',
     margin: 2,
     color: 'black',
     width: 150,
