@@ -127,7 +127,7 @@ const UserProfile = ({ uid, isSelf, route }) => {
   const onPressSubmitRating = () => {
     if (ratingValue !== 0 && ratingUserType !== null) {
       // TODO: Add below function
-      bk.rateUser(userID, ratingValue, ratingUserType);
+      // bk.rateUser(userID, ratingValue, ratingUserType);
       console.log(`Rated user ${userID} with ${ratingValue} stars as a ${ratingUserType}`);
       closeRatingSheet();
     }
@@ -194,8 +194,8 @@ const UserProfile = ({ uid, isSelf, route }) => {
   const RatingsView = () => (
     <View style={styles.ratingsView}>
       {/* TODO: change icon to a textbook */}
-      <RatingView ratingValue={buyerRating} ratingText="Buyer Rating" ratingBackgroundColor="black" />
-      <RatingView ratingValue={sellerRating} ratingText="Seller Rating" />
+      <RatingView ratingValue={buyerRating ?? 0} ratingText="Buyer Rating" ratingBackgroundColor="black" />
+      <RatingView ratingValue={sellerRating ?? 0} ratingText="Seller Rating" />
     </View>
   );
 
@@ -250,7 +250,7 @@ const UserProfile = ({ uid, isSelf, route }) => {
           </TouchableOpacity>
           <View style={styles.profilePictureView}>{profilePicture}</View>
 
-          <UpdatePhotoButton />
+          {isSelf ? <UpdatePhotoButton /> : null}
 
           <View style={styles.nameAndContextMenu}>
             <Text style={styles.name}>{name}</Text>
