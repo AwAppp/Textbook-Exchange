@@ -1,27 +1,38 @@
-import { View, Text, StyleSheet, Image, Button } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+
+import { ActivityIndicator, Dialog, IconButton, Menu, Paragraph, RadioButton } from "react-native-paper";
+import { BottomSheetModal, BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { Button, Image, StyleSheet, Text, View } from "react-native";
 import { useEffect, useRef, useState } from "react";
+
+import Backend from "../Backend.js";
 import { EvilIcons } from "@expo/vector-icons";
 import { Rating } from "react-native-ratings";
-import Backend from "../Backend.js";
-import * as ImagePicker from "expo-image-picker";
-import { ActivityIndicator, Menu, IconButton, Button as PaperButton } from "react-native-paper";
 
 // TODO: Add prop isNotSelf
-const UserProfile = ({ uid }) => {
+const UserProfile = ({ uid, isNotSelf }) => {
   const [profilePicture, setProfilePicture] = useState(null);
   const [name, setName] = useState("");
   const [buyerRating, setBuyerRating] = useState(0);
   const [sellerRating, setSellerRating] = useState(0);
+
   const [updating, setUpdating] = useState(false);
   const [loading, setLoading] = useState(true);
+
   const [contextMenuIsVisible, setContextMenuIsVisible] = useState(false);
+  const [blockDialogIsVisible, setBlockDialogIsVisible] = useState(false);
+  const [reportDialogIsVisible, setReportDialogIsVisible] = useState(false);
+
+  const [ratingValue, setRatingValue] = useState(0);
+  const [ratingUserType, setRatingUserType] = useState(null);
 
   const contextMenuButtonRef = useRef();
+  const ratingSheetRef = useRef();
 
   const bk = new Backend();
 
   // TODO: Remove this var
-  const isNotSelf = true;
+  // const isNotSelf = true;
 
   useEffect(() => {
     // define method to fetch icon from storage
@@ -74,13 +85,57 @@ const UserProfile = ({ uid }) => {
 
   const openContextMenu = () => setContextMenuIsVisible(true);
   const closeContextMenu = () => setContextMenuIsVisible(false);
+  const openRatingSheet = () => ratingSheetRef.current?.present();
+  const closeRatingSheet = () => ratingSheetRef.current?.dismiss();
+  const openBlockDialog = () => setBlockDialogIsVisible(true);
+  const closeBlockDialog = () => setBlockDialogIsVisible(false);
+  const openReportDialog = () => setReportDialogIsVisible(true);
+  const closeReportDialog = () => setReportDialogIsVisible(false);
 
   const onPressRate = () => {
-    // popup rate modal, has buyer or seller toggles and then a star rating component
+    closeContextMenu();
+    openRatingSheet();
   };
 
-  const onPressBlock = () => {};
-  const onPressReport = () => {};
+  const onFinishRating = (ratingValue) => setRatingValue(ratingValue);
+
+  const onRatingSheetDismiss = () => {
+    setRatingValue(0);
+    setRatingUserType(null);
+  };
+
+  const onPressSubmitRating = () => {
+    if (ratingValue !== 0 && ratingUserType !== null) {
+      // TODO: Add below function
+      // bk.rateUser(uid, ratingValue, ratingUserType);
+      console.log(`Rated user ${uid} with ${ratingValue} stars as a ${ratingUserType}`);
+      closeRatingSheet();
+    }
+  };
+
+  const onPressBlock = () => {
+    closeContextMenu();
+    openBlockDialog();
+  };
+
+  const blockUser = () => {
+    closeBlockDialog();
+    // TODO: Add below function
+    // bk.blockUser(uid);
+    console.log(`Blocked user ${uid}`);
+  };
+
+  const onPressReport = () => {
+    closeContextMenu();
+    openReportDialog();
+  };
+
+  const reportUser = () => {
+    closeReportDialog();
+    // TODO: Add below function
+    // bk.reportUser(uid);
+    console.log(`Reported user ${uid}`);
+  };
 
   const UpdatePhotoButton = () => (
     <Button
@@ -119,9 +174,40 @@ const UserProfile = ({ uid }) => {
   const RatingsView = () => (
     <View style={styles.ratingsView}>
       {/* TODO: change icon to a textbook */}
-      <RatingView ratingValue={buyerRating} ratingText="Buyer Rating" />
+      <RatingView ratingValue={buyerRating} ratingText="Buyer Rating" ratingBackgroundColor="black" />
       <RatingView ratingValue={sellerRating} ratingText="Seller Rating" />
     </View>
+  );
+
+  const RatingSheetContentView = () => (
+    <View>
+      <Text>Was this user a buyer or seller?</Text>
+      <View>
+        <RadioButton.Group onValueChange={(value) => setRatingUserType(value)} value={ratingUserType}>
+          <RadioButton.Item label="Buyer" value="buyer" />
+          <RadioButton.Item label="Seller" value="seller" />
+        </RadioButton.Group>
+      </View>
+      <Rating startingValue={0} onFinishRating={onFinishRating} />
+      <Button title="Submit" onPress={onPressSubmitRating} />
+    </View>
+  );
+
+  const ContextMenuDialog = ({ visible, onDismiss, title, content, onPressYes, onPressCancel }) => (
+    <Dialog visible={visible} onDismiss={onDismiss}>
+      <Dialog.Title>{title}</Dialog.Title>
+      <Dialog.Content>
+        <Paragraph>{content}</Paragraph>
+      </Dialog.Content>
+      <Dialog.Actions>
+        <Button title="Yes" onPress={onPressYes}>
+          Yes
+        </Button>
+        <Button title="Cancel" onPress={onPressCancel}>
+          Cancel
+        </Button>
+      </Dialog.Actions>
+    </Dialog>
   );
 
   if (loading || updating) {
@@ -132,30 +218,53 @@ const UserProfile = ({ uid }) => {
     );
   } else {
     return (
-      <View style={{ marginTop: 50 }}>
-        <View style={styles.profilePictureView}>{profilePicture}</View>
+      <BottomSheetModalProvider>
+        <View style={{ flex: 1, marginTop: 50 }}>
+          <View style={styles.profilePictureView}>{profilePicture}</View>
 
-        <UpdatePhotoButton />
+          <UpdatePhotoButton />
 
-        <View style={styles.nameAndContextMenu}>
-          <Text style={styles.name}>{name}</Text>
+          <View style={styles.nameAndContextMenu}>
+            <Text style={styles.name}>{name}</Text>
 
-          <Menu
-            visible={contextMenuIsVisible}
-            onDismiss={closeContextMenu}
-            anchor={<ContextMenuButton />}
-            anchorPosition="bottom"
-            style={styles.contextMenu}
-          >
-            {/* TODO: Add icons to each of the options */}
-            <Menu.Item onPress={onPressRate} title="Rate" />
-            <Menu.Item onPress={onPressBlock} title="Block" />
-            <Menu.Item onPress={onPressReport} title="Report" />
-          </Menu>
+            <Menu
+              visible={contextMenuIsVisible}
+              onDismiss={closeContextMenu}
+              anchor={<ContextMenuButton />}
+              anchorPosition="bottom"
+              style={styles.contextMenu}
+            >
+              {/* TODO: Add icons to each of the options */}
+              <Menu.Item onPress={onPressRate} title="Rate" />
+              <Menu.Item onPress={onPressBlock} title="Block" />
+              <Menu.Item onPress={onPressReport} title="Report" />
+            </Menu>
+          </View>
+
+          <RatingsView />
+
+          <BottomSheetModal ref={ratingSheetRef} index={0} snapPoints={["50%"]} onDismiss={onRatingSheetDismiss}>
+            <RatingSheetContentView />
+          </BottomSheetModal>
+
+          <ContextMenuDialog
+            visible={blockDialogIsVisible}
+            onDismiss={closeBlockDialog}
+            title="Block User"
+            content="Are you sure you want to block this user?"
+            onPressYes={blockUser}
+            onPressCancel={closeBlockDialog}
+          />
+          <ContextMenuDialog
+            visible={reportDialogIsVisible}
+            onDismiss={closeReportDialog}
+            title="Report User"
+            content="Are you sure you want to report this user?"
+            onPressYes={reportUser}
+            onPressCancel={closeReportDialog}
+          />
         </View>
-
-        <RatingsView />
-      </View>
+      </BottomSheetModalProvider>
     );
   }
 };
