@@ -10,7 +10,8 @@ import Backend from "../Backend.js";
 import { EvilIcons } from "@expo/vector-icons";
 import { Rating } from "react-native-ratings";
 
-const UserProfile = ({ uid, isSelf }) => {
+const UserProfile = ({ uid, isSelf, route }) => {
+  const userID = uid || route.params.uid;
   const [profilePicture, setProfilePicture] = useState(null);
   const [name, setName] = useState("");
   const [buyerRating, setBuyerRating] = useState(0);
@@ -36,7 +37,7 @@ const UserProfile = ({ uid, isSelf }) => {
   useEffect(() => {
     // define method to fetch icon from storage
     const getIcon = async () => {
-      const imageResult = await bk.getUserIcon(uid);
+      const imageResult = await bk.getUserIcon(userID);
       if (imageResult.uri != null) {
         setProfilePicture(
           <Image
@@ -52,7 +53,7 @@ const UserProfile = ({ uid, isSelf }) => {
 
     // define method to fetch infomation from firestore
     const getInfo = async () => {
-      const userInfo = await bk.getUserInfoByUid(uid);
+      const userInfo = await bk.getUserInfoByUid(userID);
 
       // console.log(name); // for debug
 
@@ -93,14 +94,14 @@ const UserProfile = ({ uid, isSelf }) => {
 
   const onPressChat = async () => {
     try {
-      let icon = await bk.getUserIcon(uid);
+      let icon = await bk.getUserIcon(userID);
       console.log(icon.uri);
       console.log("before navigation");
       let icon_uri = icon.uri;
       navigation.replace(
         "Chat",
         {
-          userId: uid,
+          userId: userID,
           name: name,
           image: icon_uri,
         },
@@ -126,8 +127,8 @@ const UserProfile = ({ uid, isSelf }) => {
   const onPressSubmitRating = () => {
     if (ratingValue !== 0 && ratingUserType !== null) {
       // TODO: Add below function
-      // bk.rateUser(uid, ratingValue, ratingUserType);
-      console.log(`Rated user ${uid} with ${ratingValue} stars as a ${ratingUserType}`);
+      bk.rateUser(userID, ratingValue, ratingUserType);
+      console.log(`Rated user ${userID} with ${ratingValue} stars as a ${ratingUserType}`);
       closeRatingSheet();
     }
   };
@@ -140,8 +141,8 @@ const UserProfile = ({ uid, isSelf }) => {
   const blockUser = () => {
     closeBlockDialog();
     // TODO: Add below function
-    // bk.blockUser(uid);
-    console.log(`Blocked user ${uid}`);
+    // bk.blockUser(userID);
+    console.log(`Blocked user ${userID}`);
   };
 
   const onPressReport = () => {
@@ -152,8 +153,8 @@ const UserProfile = ({ uid, isSelf }) => {
   const reportUser = () => {
     closeReportDialog();
     // TODO: Add below function
-    // bk.reportUser(uid);
-    console.log(`Reported user ${uid}`);
+    // bk.reportUser(userID);
+    console.log(`Reported user ${userID}`);
   };
 
   const UpdatePhotoButton = () => (
@@ -166,7 +167,7 @@ const UserProfile = ({ uid, isSelf }) => {
         if (uploaded_file != null && uploaded_file.assets != null) {
           const waitAndRerender = async () => {
             setUpdating(true);
-            await bk.updateUserIcon(uid, await bk.getBlobFromURI(uploaded_file.assets[0].uri));
+            await bk.updateUserIcon(userID, await bk.getBlobFromURI(uploaded_file.assets[0].uri));
             await new Promise((resolve) => setTimeout(resolve, 3000));
             setUpdating(false);
           };
