@@ -127,7 +127,7 @@ const UserProfile = ({ uid, isSelf, route }) => {
   const onPressSubmitRating = () => {
     if (ratingValue !== 0 && ratingUserType !== null) {
       // TODO: Add below function
-      // bk.rateUser(userID, ratingValue, ratingUserType);
+      bk.rateUser(userID, ratingValue, ratingUserType);
       console.log(`Rated user ${userID} with ${ratingValue} stars as a ${ratingUserType}`);
       closeRatingSheet();
     }
@@ -141,7 +141,7 @@ const UserProfile = ({ uid, isSelf, route }) => {
   const blockUser = () => {
     closeBlockDialog();
     // TODO: Add below function
-    // bk.blockUser(userID);
+    bk.blockUser(userID);
     console.log(`Blocked user ${userID}`);
   };
 
@@ -153,7 +153,7 @@ const UserProfile = ({ uid, isSelf, route }) => {
   const reportUser = () => {
     closeReportDialog();
     // TODO: Add below function
-    // bk.reportUser(userID);
+    bk.reportUser(userID);
     console.log(`Reported user ${userID}`);
   };
 

@@ -14,7 +14,7 @@ import {
 import {
     getFirestore,
     collection, setDoc, doc, getDoc, updateDoc, addDoc,
-    getDocs, query, where, deleteDoc
+    getDocs, query, where, deleteDoc, arrayUnion, increment
 } from "firebase/firestore";
 
 import {
@@ -237,6 +237,44 @@ class Backend {
         catch (error) {
             return error;
         }
+    }
+
+    // ! TEST IDEA: math behind this function, mismatch b/w rating and ratingCount
+    async rateUser(uid, rating, userType) {
+        // get existing rating value and rating count
+        // do math to find new rating value, add 1 to rating count
+        // update rating value and rating count
+
+        const user = await this.getUserInfoByUid(uid);
+        const oldRating = userType === "buyer" ? user.buyerRating : user.sellerRating || 0;
+        const oldRatingCount = userType === "buyer" ? user.buyerRatingCount : user.sellerRatingCount || 0;
+
+        const newRatingCount = oldRatingCount + 1;
+        const newRating = (oldRating + (rating - oldRating) / newRatingCount);
+
+
+        if (userType === "buyer") {
+            user.buyerRating = newRating;
+            user.buyerRatingCount = newRatingCount;
+        } else {
+            user.sellerRating = newRating;
+            user.sellerRatingCount = newRatingCount;
+        }
+        await this.updateUser(user);
+        console.log(`Rated ${userType} ${uid} with rating ${rating}`);
+    }
+
+    async blockUser(uid) {
+        // add uid to blockedUsers set/map
+        const userID = this.#authenticationService.currentUser.uid;
+        const userRef = doc(this.#userDataBase, "users", String(userID));
+        await updateDoc(userRef, { blockedUsers: arrayUnion(uid) });
+    }
+
+    async reportUser(uid) {
+        // increment reportCount of user by 1
+        const userRef = doc(this.#userDataBase, "users", String(uid));
+        await updateDoc(userRef, { reportCount: increment(1) });
     }
 
     // addMeassage - an async function used to add new message to
