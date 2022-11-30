@@ -65,6 +65,7 @@ const Chat = ({route, navigation}) => {
         <GiftedChat
             messages={messages}
             showAvatarForEveryMessage={true}
+            renderAvatar={null}
             onSend={messages => onSend(messages)}
             user={{
                 _id: userId,
