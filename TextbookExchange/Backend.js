@@ -246,8 +246,8 @@ class Backend {
         // update rating value and rating count
 
         const user = await this.getUserInfoByUid(uid);
-        const oldRating = userType === "buyer" ? user.buyerRating : user.sellerRating || 0;
-        const oldRatingCount = userType === "buyer" ? user.buyerRatingCount : user.sellerRatingCount || 0;
+        const oldRating = userType === ("buyer" ? user.buyerRating : user.sellerRating) || 0;
+        const oldRatingCount = userType === ("buyer" ? user.buyerRatingCount : user.sellerRatingCount) || 0;
 
         const newRatingCount = oldRatingCount + 1;
         const newRating = (oldRating + (rating - oldRating) / newRatingCount);
