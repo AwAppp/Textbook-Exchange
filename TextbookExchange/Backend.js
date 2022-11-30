@@ -14,7 +14,7 @@ import {
 import {
     getFirestore,
     collection, setDoc, doc, getDoc, updateDoc, addDoc,
-    getDocs, query, where, deleteDoc, arrayUnion, increment
+    getDocs, query, where, deleteDoc, arrayUnion, increment, onSnapshot
 } from "firebase/firestore";
 
 import {
@@ -162,6 +162,16 @@ class Backend {
         }
     }
 
+    async listenUserInfoByUID(uid, callback) {
+        const unsub = onSnapshot(doc(this.#userDataBase, "users", String(uid)), (doc) => {
+            if (doc.exists()) {
+                callback(doc.data());
+            }
+        });
+
+        return unsub;
+    }
+
     // addUser - an sync function to try to add information of a new user
     // into database
     // parameters:  user: User object (or any object with a uid field)
@@ -246,8 +256,8 @@ class Backend {
         // update rating value and rating count
 
         const user = await this.getUserInfoByUid(uid);
-        const oldRating = userType === ("buyer" ? user.buyerRating : user.sellerRating) || 0;
-        const oldRatingCount = userType === ("buyer" ? user.buyerRatingCount : user.sellerRatingCount) || 0;
+        const oldRating = (userType === "buyer" ? user.buyerRating : user.sellerRating) || 0;
+        const oldRatingCount = (userType === "buyer" ? user.buyerRatingCount : user.sellerRatingCount) || 0;
 
         const newRatingCount = oldRatingCount + 1;
         const newRating = (oldRating + (rating - oldRating) / newRatingCount);

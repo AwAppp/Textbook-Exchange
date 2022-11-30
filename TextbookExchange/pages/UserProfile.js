@@ -51,36 +51,24 @@ const UserProfile = ({ uid, isSelf, route }) => {
       }
     };
 
-    // define method to fetch infomation from firestore
-    const getInfo = async () => {
-      const userInfo = await bk.getUserInfoByUid(userID);
-
-      // console.log(name); // for debug
-
-      if (userInfo.username != null) {
-        setName(userInfo.username);
-      } else {
-        setName("error when set name");
-      }
-
-      if (userInfo.buyerRating != null) {
-        setBuyerRating(userInfo.buyerRating);
-      } else {
-        setBuyerRating(0);
-      }
-
-      if (userInfo.sellerRating != null) {
-        setSellerRating(userInfo.sellerRating);
-      } else {
-        setSellerRating(0);
-      }
+    const updateUserInfo = async (userData) => {
+      if (userData.username !== null) setName(userData.username);
+      else setName("Error");
+      if (userData.buyerRating !== null) setBuyerRating(userData.buyerRating);
+      else setBuyerRating(0);
+      if (userData.sellerRating !== null) setSellerRating(userData.sellerRating);
+      else setSellerRating(0);
     };
 
     // call the methods to get result
     getIcon();
-    getInfo();
+    const unsubUserData = bk.listenUserInfoByUID(userID, updateUserInfo);
 
     setLoading(false);
+
+    return () => {
+      unsubUserData.then((unsub) => unsub());
+    };
   }, [updating, loading]);
 
   const openContextMenu = () => setContextMenuIsVisible(true);
