@@ -1,4 +1,4 @@
-import User from "./user";
+import User from "./user.js";
 
 class Message_parse{
     constructor(doc) {

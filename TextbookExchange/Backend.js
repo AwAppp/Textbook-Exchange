@@ -21,7 +21,7 @@ import {
     getStorage,
     ref, uploadBytes, uploadString, getDownloadURL, connectStorageEmulator
 } from "firebase/storage";
-import { Message_parse } from "./models/message";
+import { Message_parse } from "./models/message.js";
 
 
 
