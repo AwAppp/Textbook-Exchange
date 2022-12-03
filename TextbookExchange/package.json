@@ -7,9 +7,11 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eas-build-pre-install": "npm dedupe"
+    "eas-build-pre-install": "npm dedupe",
+    "test": "jest --watchAll"
   },
   "dependencies": {
+    "@babel/plugin-transform-flow-strip-types": "^7.19.0",
     "@expo/webpack-config": "^0.17.2",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-navigation/bottom-tabs": "^6.4.0",
@@ -18,10 +20,12 @@
     "@react-navigation/stack": "^6.3.3",
     "@rneui/base": "^4.0.0-rc.7",
     "@rneui/themed": "^4.0.0-rc.7",
+    "enzyme": "^3.11.0",
     "expo": "^47.0.0",
     "expo-image-picker": "~14.0.2",
     "expo-status-bar": "~1.4.2",
     "firebase": "^9.13.0",
+    "jest-expo": "^47.0.1",
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-native": "0.70.5",
@@ -35,10 +39,26 @@
     "react-native-safe-area-context": "4.4.1",
     "react-native-screens": "~3.18.0",
     "react-native-vector-icons": "^9.2.0",
-    "react-native-web": "~0.18.7"
+    "react-native-web": "~0.18.7",
+    "react-test-renderer": "^18.2.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.19.3"
+    "@babel/core": "^7.19.3",
+    "@testing-library/jest-native": "^5.3.0",
+    "@testing-library/react-native": "^11.5.0",
+    "jest": "^29.3.1"
   },
-  "private": true
+  "private": true,
+  "jest": {
+    "preset": "react-native",
+    "transformIgnorePatterns": [
+      "node_modules/(?!(react-native|my-project|react-native-button)/)"
+    ],
+    "setupFilesAfterEnv": [
+      "@testing-library/jest-native/extend-expect"
+    ],
+    "testMatch": [
+      "**/test/*.js?(x)"
+    ]
+  }
 }
