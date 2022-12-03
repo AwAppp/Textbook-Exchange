@@ -52,4 +52,47 @@ assert(await bk.updatePost({post_id: post_id, content: "test"}));
 
 const allPost = await bk.listPosts();
 
-assert(typeof(allPost) == "object");
+assert(typeof (allPost) == "object");
+
+
+const testRateUser = async () => {
+    const getRandomRatingValue = () => Math.floor(Math.random() * 5) + 1;
+    
+    const rating1 = getRandomRatingValue();
+    const rating2 = getRandomRatingValue();
+    const rating3 = getRandomRatingValue();
+
+    await bk.rateUser(uid, rating1, "buyer");
+    const average1 = rating1;
+    let userInfo = await bk.getUserInfoByUid(uid);
+    assert.equal(userInfo.buyerRating, average1);
+    assert.equal(userInfo.buyerRatingCount, 1);
+
+    await bk.rateUser(uid, rating2, "buyer");
+    const average2 = (rating1 + rating2) / 2;
+    userInfo = await bk.getUserInfoByUid(uid);
+    assert.equal(userInfo.buyerRating, average2);
+    assert.equal(userInfo.buyerRatingCount, 2);
+
+    await bk.rateUser(uid, rating3, "buyer");
+    const average3 = (rating1 + rating2 + rating3) / 3;
+    userInfo = await bk.getUserInfoByUid(uid);
+    assert.equal(userInfo.buyerRating, average3);
+    assert.equal(userInfo.buyerRatingCount, 3);
+}
+await testRating();
+
+const testBlockUser = async () => {
+    const generatedID = Array.from(Array(20), () => Math.floor(Math.random() * 36).toString(36)).join("");
+
+    await bk.blockUser(generatedUID);
+    assert.ok((await bk.getUserInfoByUid(generatedUID)).blockedUsers.includes(uid));
+}
+await testBlockUser();
+
+const testReportUser = async () => {
+    const reportCount = (await bk.getUserInfoByUid(uid)).reportCount;
+    await bk.reportUser(uid);
+    assert.equal((await bk.getUserInfoByUid(uid)).reportCount, reportCount + 1);
+}
+await testReportUser();

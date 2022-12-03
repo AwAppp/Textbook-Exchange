@@ -162,6 +162,18 @@ class Backend {
         }
     }
 
+    /**
+     * Callback function for user info listener
+     * @callback userInfoListenerCallback
+     * @param {Object} userInfo - user info object received from firestore as `document.data()`
+     */
+
+    /**
+     * Executes `callback` when any of the user document's fields change.
+     * @param {string} uid uid of user to attach a listener to
+     * @param {userInfoListenerCallback} callback Callback to execute when user info changes
+     * @returns Unsubscribe function to execute in order to detach the listener.
+     */
     async listenUserInfoByUID(uid, callback) {
         const unsub = onSnapshot(doc(this.#userDataBase, "users", String(uid)), (doc) => {
             if (doc.exists()) {
@@ -249,7 +261,12 @@ class Backend {
         }
     }
 
-    // ! TEST IDEA: math behind this function, mismatch b/w rating and ratingCount
+    /**
+     * Rates user with uid based on rating value and userType. Adds to user's average rating
+     * @param {string} uid uid of user to add rating to
+     * @param {int} rating rating value
+     * @param {('buyer'|'seller')} userType Role of user in transaction to add the rating to. Valid values are 'buyer' and 'seller'.
+     */
     async rateUser(uid, rating, userType) {
         // get existing rating value and rating count
         // do math to find new rating value, add 1 to rating count
@@ -274,6 +291,10 @@ class Backend {
         console.log(`Rated ${userType} ${uid} with rating ${rating}`);
     }
 
+    /**
+     * Adds user with uid to authenticated user's blocklist
+     * @param {string} uid uid of user to block
+     */
     async blockUser(uid) {
         // add uid to blockedUsers set/map
         const userID = this.#authenticationService.currentUser.uid;
@@ -281,6 +302,10 @@ class Backend {
         await updateDoc(userRef, { blockedUsers: arrayUnion(uid) });
     }
 
+    /**
+     * Reports user with specified uid
+     * @param {*} uid uid of user to report
+     */
     async reportUser(uid) {
         // increment reportCount of user by 1
         const userRef = doc(this.#userDataBase, "users", String(uid));
