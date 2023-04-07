@@ -1,4 +1,4 @@
-# team-project-cs-130
+# Textbook Exchange
 
 ## How to Run Project:  
 1. Clone the project onto your device  
